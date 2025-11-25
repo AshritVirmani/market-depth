@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Dhan Data Viewer</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: 'Segoe UI', sans-serif; 
+      background: #0a0a0a; 
+      color: #e0e0e0; 
+      padding: 20px;
+      min-height: 100vh;
+    }
+    .header {
+      text-align: center;
+      padding: 20px;
+      border-bottom: 1px solid #333;
+      margin-bottom: 20px;
+    }
+    .header h1 { color: #fff; font-size: 24px; margin-bottom: 10px; }
+    .header p { color: #888; font-size: 14px; }
+    
+    .upload-zone {
+      border: 2px dashed #444;
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: border-color 0.3s;
+    }
+    .upload-zone:hover { border-color: #007bff; }
+    .upload-zone input { display: none; }
+    .upload-zone label { cursor: pointer; color: #aaa; font-size: 16px; }
+    .upload-zone label span { color: #007bff; text-decoration: underline; }
+    
+    .stats-bar {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 15px 20px;
+      flex: 1;
+      min-width: 150px;
+    }
+    .stat-card .label { color: #888; font-size: 12px; margin-bottom: 5px; }
+    .stat-card .value { color: #fff; font-size: 20px; font-weight: bold; }
+    .stat-card .value.green { color: #4caf50; }
+    .stat-card .value.red { color: #ff5252; }
+    
+    /* Pressure Bar */
+    .pressure-container {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin-bottom: 20px;
+    }
+    .pressure-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+    .pressure-header .buy-label { color: #4caf50; font-weight: bold; }
+    .pressure-header .sell-label { color: #ff5252; font-weight: bold; }
+    .pressure-header .neutral { color: #888; }
+    .pressure-bar-wrapper {
+      position: relative;
+      height: 32px;
+      background: #252525;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .pressure-bar {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+    .pressure-bar.buy {
+      left: 0;
+      background: linear-gradient(90deg, #4caf50, #2e7d32);
+      border-radius: 4px 0 0 4px;
+    }
+    .pressure-bar.sell {
+      right: 0;
+      background: linear-gradient(270deg, #ff5252, #c62828);
+      border-radius: 0 4px 4px 0;
+    }
+    .pressure-center-line {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      height: 100%;
+      width: 2px;
+      background: #555;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+    .pressure-values {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+    .pressure-values .buy-vol { color: #4caf50; }
+    .pressure-values .sell-vol { color: #ff5252; }
+    .pressure-values .ratio {
+      color: #ffd700;
+      font-weight: bold;
+      background: #333;
+      padding: 2px 10px;
+      border-radius: 4px;
+    }
+    .pressure-indicator {
+      text-align: center;
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      padding: 5px 15px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    .pressure-indicator.bullish { background: rgba(76, 175, 80, 0.2); color: #4caf50; }
+    .pressure-indicator.bearish { background: rgba(255, 82, 82, 0.2); color: #ff5252; }
+    .pressure-indicator.neutral { background: rgba(255, 215, 0, 0.2); color: #ffd700; }
+    .pressure-center { text-align: center; }
+    
+    /* Candlestick Chart */
+    .chart-container {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #333;
+    }
+    .chart-header h3 { color: #fff; font-size: 14px; margin: 0; }
+    .chart-controls {
+      display: flex;
+      gap: 8px;
+    }
+    .chart-controls select {
+      background: #252525;
+      color: #e0e0e0;
+      border: 1px solid #444;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .chart-info {
+      display: flex;
+      gap: 20px;
+      font-size: 12px;
+      color: #888;
+    }
+    .chart-info span { margin-right: 5px; }
+    .chart-info .green { color: #4caf50; }
+    .chart-info .red { color: #ff5252; }
+    
+    .candlestick-chart {
+      position: relative;
+      height: 250px;
+      background: #0f0f0f;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .chart-canvas {
+      width: 100%;
+      height: 100%;
+    }
+    .price-axis {
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 100%;
+      width: 60px;
+      background: rgba(15, 15, 15, 0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 5px;
+      font-size: 10px;
+      color: #888;
+    }
+    .price-label {
+      text-align: right;
+      padding-right: 5px;
+    }
+    .current-price-line {
+      position: absolute;
+      right: 60px;
+      height: 1px;
+      background: #ffd700;
+      pointer-events: none;
+    }
+    .current-price-tag {
+      position: absolute;
+      right: 0;
+      background: #ffd700;
+      color: #000;
+      padding: 2px 5px;
+      font-size: 10px;
+      font-weight: bold;
+      border-radius: 2px;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .controls input[type="range"] { flex: 1; min-width: 200px; }
+    .controls button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .controls .btn-play { background: #28a745; color: white; }
+    .controls .btn-pause { background: #ffc107; color: black; }
+    .controls .btn-export { background: #007bff; color: white; }
+    .timestamp-display {
+      background: #1a1a1a;
+      padding: 8px 15px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: #ffd700;
+    }
+    
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 1200px) {
+      .main-content { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 800px) {
+      .main-content { grid-template-columns: 1fr; }
+    }
+    
+    .panel {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .panel-header {
+      background: #252525;
+      padding: 12px 15px;
+      font-weight: bold;
+      font-size: 14px;
+      border-bottom: 1px solid #333;
+    }
+    .panel-header.bids { border-left: 3px solid #4caf50; }
+    .panel-header.asks { border-left: 3px solid #ff5252; }
+    .panel-header.trades { border-left: 3px solid #2196f3; }
+    .panel-header.signals { border-left: 3px solid #ff9800; }
+    
+    .depth-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .depth-table th {
+      text-align: left;
+      padding: 8px 12px;
+      color: #888;
+      font-size: 11px;
+      text-transform: uppercase;
+      border-bottom: 1px solid #333;
+    }
+    .depth-table td {
+      padding: 8px 12px;
+      font-size: 13px;
+      border-bottom: 1px solid #222;
+    }
+    .depth-table tr:hover { background: #252525; }
+    .depth-table .price { font-weight: bold; }
+    .depth-table .bid-price { color: #4caf50; }
+    .depth-table .ask-price { color: #ff5252; }
+    .depth-table .qty { color: #fff; }
+    .depth-table .bar {
+      height: 4px;
+      border-radius: 2px;
+      margin-top: 4px;
+    }
+    .depth-table .bar.bid { background: linear-gradient(90deg, #4caf50, transparent); }
+    .depth-table .bar.ask { background: linear-gradient(270deg, #ff5252, transparent); }
+    
+    .trade-row { display: flex; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid #222; font-size: 13px; }
+    .trade-row:hover { background: #252525; }
+    .trade-row .time { color: #888; }
+    .trade-row .qty { color: #fff; }
+    .trade-row .price.buy { color: #4caf50; }
+    .trade-row .price.sell { color: #ff5252; }
+    
+    .signal-row { padding: 10px 12px; border-bottom: 1px solid #222; font-size: 13px; }
+    .signal-row.buy { border-left: 3px solid #4caf50; background: rgba(76, 175, 80, 0.1); }
+    .signal-row.sell { border-left: 3px solid #ff5252; background: rgba(255, 82, 82, 0.1); }
+    .signal-row.spoof { border-left: 3px solid #ff9800; background: rgba(255, 152, 0, 0.1); }
+    .signal-row.panic { border-left: 3px solid #f44336; background: rgba(244, 67, 54, 0.1); }
+    .signal-row.melt { border-left: 3px solid #ff4444; background: rgba(255, 68, 68, 0.1); }
+    .signal-row .type { font-weight: bold; margin-bottom: 3px; }
+    .signal-row .details { color: #888; font-size: 12px; }
+    
+    .empty-state { padding: 40px; text-align: center; color: #666; }
+    
+    .signals-panel { grid-column: span 3; }
+    @media (max-width: 1200px) { .signals-panel { grid-column: span 2; } }
+    @media (max-width: 800px) { .signals-panel { grid-column: span 1; } }
+    
+    .signals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 10px;
+      padding: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📊 Dhan Market Data Viewer</h1>
+    <p>Upload your JSON log file to visualize market depth, trades, and signals</p>
+  </div>
+
+  <div class="upload-zone" id="uploadZone">
+    <input type="file" id="fileInput" accept=".json">
+    <label for="fileInput">
+      Drop your JSON file here or <span>click to browse</span>
+    </label>
+  </div>
+
+  <div id="dataView" style="display: none;">
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="label">Total Snapshots</div>
+        <div class="value" id="statSnapshots">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Total Signals</div>
+        <div class="value" id="statSignals">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Buy Signals</div>
+        <div class="value green" id="statBuys">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Sell Signals</div>
+        <div class="value red" id="statSells">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Spoofs Detected</div>
+        <div class="value" id="statSpoofs" style="color: #ff9800;">0</div>
+      </div>
+    </div>
+
+    <!-- Pressure Bar -->
+    <div class="pressure-container">
+      <div class="pressure-header">
+        <span class="buy-label">🟢 BUYERS</span>
+        <span class="neutral">MARKET PRESSURE</span>
+        <span class="sell-label">SELLERS 🔴</span>
+      </div>
+      <div class="pressure-bar-wrapper">
+        <div class="pressure-bar buy" id="buyPressureBar" style="width: 50%;"></div>
+        <div class="pressure-bar sell" id="sellPressureBar" style="width: 50%;"></div>
+        <div class="pressure-center-line"></div>
+      </div>
+      <div class="pressure-values">
+        <span class="buy-vol" id="buyVolume">Buy: 0</span>
+        <div class="pressure-center">
+          <span class="ratio" id="pressureRatio">1:1</span>
+        </div>
+        <span class="sell-vol" id="sellVolume">Sell: 0</span>
+      </div>
+      <div class="pressure-center">
+        <span class="pressure-indicator neutral" id="pressureIndicator">NEUTRAL</span>
+      </div>
+    </div>
+
+    <!-- Candlestick Chart -->
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3>📈 Price Action (Built from Trades)</h3>
+        <div class="chart-controls">
+          <select id="candleInterval">
+            <option value="5">5 Snapshots</option>
+            <option value="10" selected>10 Snapshots</option>
+            <option value="20">20 Snapshots</option>
+            <option value="30">30 Snapshots</option>
+          </select>
+        </div>
+      </div>
+      <div class="chart-info">
+        <span>O: <span class="green" id="chartOpen">--</span></span>
+        <span>H: <span class="green" id="chartHigh">--</span></span>
+        <span>L: <span class="red" id="chartLow">--</span></span>
+        <span>C: <span id="chartClose">--</span></span>
+        <span>Vol: <span id="chartVol">--</span></span>
+      </div>
+      <div class="candlestick-chart">
+        <canvas id="chartCanvas" class="chart-canvas"></canvas>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn-play" id="btnPlay">▶ Play</button>
+      <input type="range" id="slider" min="0" max="100" value="0">
+      <div class="timestamp-display" id="currentTime">--</div>
+      <button class="btn-export" id="btnExport">Export HTML</button>
+    </div>
+
+    <div class="main-content">
+      <div class="panel">
+        <div class="panel-header bids">BIDS (Support)</div>
+        <table class="depth-table">
+          <thead><tr><th>Price</th><th>Quantity</th></tr></thead>
+          <tbody id="bidsBody"></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header asks">ASKS (Resistance)</div>
+        <table class="depth-table">
+          <thead><tr><th>Price</th><th>Quantity</th></tr></thead>
+          <tbody id="asksBody"></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header trades">RECENT TRADES</div>
+        <div id="tradesBody"></div>
+      </div>
+
+      <div class="panel signals-panel">
+        <div class="panel-header signals">ALL SIGNALS (Chronological)</div>
+        <div class="signals-grid" id="signalsBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let data = [];
+    let currentIndex = 0;
+    let isPlaying = false;
+    let playInterval = null;
+    let candles = []; // Built from trade data
+    let candleInterval = 10; // Snapshots per candle
+
+    // File Upload
+    document.getElementById('fileInput').addEventListener('change', handleFile);
+    document.getElementById('uploadZone').addEventListener('dragover', e => {
+      e.preventDefault();
+      e.currentTarget.style.borderColor = '#007bff';
+    });
+    document.getElementById('uploadZone').addEventListener('dragleave', e => {
+      e.currentTarget.style.borderColor = '#444';
+    });
+    document.getElementById('uploadZone').addEventListener('drop', e => {
+      e.preventDefault();
+      e.currentTarget.style.borderColor = '#444';
+      if (e.dataTransfer.files.length) {
+        document.getElementById('fileInput').files = e.dataTransfer.files;
+        handleFile({ target: { files: e.dataTransfer.files } });
+      }
+    });
+
+    function handleFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          data = JSON.parse(event.target.result);
+          initViewer();
+        } catch (err) {
+          alert('Invalid JSON file');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function initViewer() {
+      document.getElementById('uploadZone').style.display = 'none';
+      document.getElementById('dataView').style.display = 'block';
+      
+      // Stats
+      const allSignals = data.flatMap(d => d.signals || []);
+      document.getElementById('statSnapshots').textContent = data.length.toLocaleString();
+      document.getElementById('statSignals').textContent = allSignals.length;
+      document.getElementById('statBuys').textContent = allSignals.filter(s => s.type?.includes('BUY')).length;
+      document.getElementById('statSells').textContent = allSignals.filter(s => s.type?.includes('SELL')).length;
+      document.getElementById('statSpoofs').textContent = allSignals.filter(s => s.type?.includes('SPOOF')).length;
+      
+      // Slider
+      const slider = document.getElementById('slider');
+      slider.max = data.length - 1;
+      slider.addEventListener('input', () => {
+        currentIndex = parseInt(slider.value);
+        renderSnapshot(currentIndex);
+      });
+      
+      // All Signals
+      renderAllSignals(allSignals);
+      
+      // Build candles from trade data
+      buildCandles();
+      
+      // Candle interval change handler
+      document.getElementById('candleInterval').addEventListener('change', (e) => {
+        candleInterval = parseInt(e.target.value);
+        buildCandles();
+        renderCandlestickChart(currentIndex);
+      });
+      
+      // Initial render
+      renderSnapshot(0);
+    }
+    
+    // Build OHLC candles from snapshot trade data
+    function buildCandles() {
+      candles = [];
+      
+      for (let i = 0; i < data.length; i += candleInterval) {
+        const chunk = data.slice(i, i + candleInterval);
+        const allPrices = [];
+        let totalVol = 0;
+        
+        // Collect all trade prices from this chunk
+        chunk.forEach(snapshot => {
+          const trades = snapshot.recentTrades || [];
+          trades.forEach(t => {
+            if (t.price) {
+              allPrices.push(t.price);
+              totalVol += t.quantity || t.qty || 0;
+            }
+          });
+          
+          // Also use best bid/ask as price reference if no trades
+          if (allPrices.length === 0) {
+            const bestBid = snapshot.marketDepth?.bids?.[0]?.price;
+            const bestAsk = snapshot.marketDepth?.asks?.[0]?.price;
+            if (bestBid) allPrices.push(bestBid);
+            if (bestAsk) allPrices.push(bestAsk);
+          }
+        });
+        
+        if (allPrices.length > 0) {
+          candles.push({
+            open: allPrices[0],
+            high: Math.max(...allPrices),
+            low: Math.min(...allPrices),
+            close: allPrices[allPrices.length - 1],
+            volume: totalVol,
+            startIndex: i,
+            endIndex: Math.min(i + candleInterval - 1, data.length - 1),
+            timestamp: chunk[0]?.timestamp || ''
+          });
+        }
+      }
+    }
+
+    function renderSnapshot(index) {
+      const snapshot = data[index];
+      if (!snapshot) return;
+      
+      document.getElementById('currentTime').textContent = snapshot.timestamp;
+      document.getElementById('slider').value = index;
+      
+      // Bids - support both 'qty' and 'quantity' field names
+      const bidsBody = document.getElementById('bidsBody');
+      const maxBidQty = Math.max(...(snapshot.marketDepth?.bids || []).map(b => b.qty || b.quantity || 0), 1);
+      bidsBody.innerHTML = (snapshot.marketDepth?.bids || []).map(b => {
+        const qty = b.qty || b.quantity || 0;
+        return `
+        <tr>
+          <td class="price bid-price">${b.price?.toFixed(2)}</td>
+          <td class="qty">
+            ${qty.toLocaleString()}
+            <div class="bar bid" style="width: ${(qty / maxBidQty) * 100}%"></div>
+          </td>
+        </tr>
+      `}).join('');
+      
+      // Asks - support both 'qty' and 'quantity' field names
+      const asksBody = document.getElementById('asksBody');
+      const maxAskQty = Math.max(...(snapshot.marketDepth?.asks || []).map(a => a.qty || a.quantity || 0), 1);
+      asksBody.innerHTML = (snapshot.marketDepth?.asks || []).map(a => {
+        const qty = a.qty || a.quantity || 0;
+        return `
+        <tr>
+          <td class="price ask-price">${a.price?.toFixed(2)}</td>
+          <td class="qty">
+            ${qty.toLocaleString()}
+            <div class="bar ask" style="width: ${(qty / maxAskQty) * 100}%"></div>
+          </td>
+        </tr>
+      `}).join('');
+      
+      // Trades
+      const tradesBody = document.getElementById('tradesBody');
+      const bestBid = snapshot.marketDepth?.bids?.[0]?.price || 0;
+      tradesBody.innerHTML = (snapshot.recentTrades || []).slice(0, 15).map(t => `
+        <div class="trade-row">
+          <span class="time">${t.time}</span>
+          <span class="qty">${t.quantity?.toLocaleString()}</span>
+          <span class="price ${t.price <= bestBid ? 'sell' : 'buy'}">${t.price?.toFixed(2)}</span>
+        </div>
+      `).join('') || '<div class="empty-state">No trades</div>';
+      
+      // Pressure Bar
+      renderPressureBar(snapshot);
+      
+      // Candlestick Chart
+      renderCandlestickChart(index);
+    }
+    
+    function renderCandlestickChart(currentSnapshotIndex) {
+      const canvas = document.getElementById('chartCanvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Set canvas size
+      canvas.width = canvas.parentElement.offsetWidth;
+      canvas.height = canvas.parentElement.offsetHeight;
+      
+      const width = canvas.width;
+      const height = canvas.height;
+      const padding = { top: 10, right: 70, bottom: 20, left: 10 };
+      const chartWidth = width - padding.left - padding.right;
+      const chartHeight = height - padding.top - padding.bottom;
+      
+      // Clear canvas
+      ctx.fillStyle = '#0f0f0f';
+      ctx.fillRect(0, 0, width, height);
+      
+      if (candles.length === 0) {
+        ctx.fillStyle = '#666';
+        ctx.font = '14px Segoe UI';
+        ctx.textAlign = 'center';
+        ctx.fillText('No candle data available', width / 2, height / 2);
+        return;
+      }
+      
+      // Show last N candles that fit
+      const candleWidth = Math.max(6, Math.min(20, chartWidth / 50));
+      const candleGap = 2;
+      const maxCandles = Math.floor(chartWidth / (candleWidth + candleGap));
+      
+      // Find which candle contains current snapshot
+      let currentCandleIdx = candles.findIndex(c => 
+        currentSnapshotIndex >= c.startIndex && currentSnapshotIndex <= c.endIndex
+      );
+      if (currentCandleIdx === -1) currentCandleIdx = candles.length - 1;
+      
+      // Show candles up to current position
+      const startIdx = Math.max(0, currentCandleIdx - maxCandles + 1);
+      const visibleCandles = candles.slice(startIdx, currentCandleIdx + 1);
+      
+      if (visibleCandles.length === 0) return;
+      
+      // Find price range
+      let minPrice = Infinity, maxPrice = -Infinity;
+      visibleCandles.forEach(c => {
+        minPrice = Math.min(minPrice, c.low);
+        maxPrice = Math.max(maxPrice, c.high);
+      });
+      
+      // Add some padding to price range
+      const priceRange = maxPrice - minPrice || 1;
+      minPrice -= priceRange * 0.05;
+      maxPrice += priceRange * 0.05;
+      
+      // Price to Y coordinate
+      const priceToY = (price) => {
+        return padding.top + chartHeight - ((price - minPrice) / (maxPrice - minPrice)) * chartHeight;
+      };
+      
+      // Draw grid lines
+      ctx.strokeStyle = '#222';
+      ctx.lineWidth = 1;
+      const gridLines = 5;
+      for (let i = 0; i <= gridLines; i++) {
+        const y = padding.top + (chartHeight / gridLines) * i;
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(width - padding.right, y);
+        ctx.stroke();
+        
+        // Price labels
+        const price = maxPrice - ((maxPrice - minPrice) / gridLines) * i;
+        ctx.fillStyle = '#666';
+        ctx.font = '10px monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(price.toFixed(2), width - padding.right + 5, y + 3);
+      }
+      
+      // Find support/resistance levels from current snapshot's market depth
+      const currentSnapshot = data[currentSnapshotIndex];
+      const supportResistanceLevels = findSupportResistance(currentSnapshot, minPrice, maxPrice);
+      
+      // Draw support/resistance zones FIRST (behind candles)
+      let labelYPositions = []; // Track label positions to avoid overlap
+      
+      supportResistanceLevels.forEach((level, idx) => {
+        if (level.price >= minPrice && level.price <= maxPrice) {
+          const y = priceToY(level.price);
+          
+          // Draw zone background
+          ctx.fillStyle = level.type === 'support' 
+            ? 'rgba(76, 175, 80, 0.1)' 
+            : 'rgba(255, 82, 82, 0.1)';
+          ctx.fillRect(padding.left, y - 4, chartWidth, 8);
+          
+          // Draw line
+          ctx.strokeStyle = level.type === 'support' ? '#4caf50' : '#ff5252';
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([8, 4]);
+          ctx.beginPath();
+          ctx.moveTo(padding.left, y);
+          ctx.lineTo(width - padding.right, y);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          
+          // Calculate label Y position (avoid overlap)
+          let labelY = y - 12;
+          // If this label would overlap with a previous one, move it
+          labelYPositions.forEach(prevY => {
+            if (Math.abs(labelY - prevY) < 15) {
+              labelY = prevY - 15; // Move up
+            }
+          });
+          labelYPositions.push(labelY);
+          
+          // Label with background for readability
+          const label = level.type === 'support' 
+            ? `▲ S: ${level.price.toFixed(2)} (${level.strength.toLocaleString()})` 
+            : `▼ R: ${level.price.toFixed(2)} (${level.strength.toLocaleString()})`;
+          
+          ctx.font = 'bold 10px Segoe UI';
+          const textWidth = ctx.measureText(label).width;
+          
+          // Background
+          ctx.fillStyle = 'rgba(15, 15, 15, 0.85)';
+          ctx.fillRect(padding.left + 3, labelY - 10, textWidth + 8, 14);
+          
+          // Text
+          ctx.fillStyle = level.type === 'support' ? '#4caf50' : '#ff5252';
+          ctx.textAlign = 'left';
+          ctx.fillText(label, padding.left + 7, labelY);
+        }
+      });
+      
+      // Draw candles
+      visibleCandles.forEach((candle, i) => {
+        const x = padding.left + i * (candleWidth + candleGap) + candleWidth / 2;
+        const isGreen = candle.close >= candle.open;
+        const isCurrentCandle = (startIdx + i) === currentCandleIdx;
+        
+        // Wick
+        ctx.strokeStyle = isGreen ? '#4caf50' : '#ff5252';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x, priceToY(candle.high));
+        ctx.lineTo(x, priceToY(candle.low));
+        ctx.stroke();
+        
+        // Body - SOLID for both green and red
+        const bodyTop = priceToY(Math.max(candle.open, candle.close));
+        const bodyBottom = priceToY(Math.min(candle.open, candle.close));
+        const bodyHeight = Math.max(1, bodyBottom - bodyTop);
+        
+        ctx.fillStyle = isGreen ? '#4caf50' : '#ff5252';
+        ctx.fillRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
+        
+        // Highlight current candle
+        if (isCurrentCandle) {
+          ctx.strokeStyle = '#ffd700';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(x - candleWidth / 2 - 2, bodyTop - 2, candleWidth + 4, bodyHeight + 4);
+        }
+      });
+      
+      // Current price line
+      const currentCandle = visibleCandles[visibleCandles.length - 1];
+      if (currentCandle) {
+        const currentY = priceToY(currentCandle.close);
+        
+        ctx.strokeStyle = '#ffd700';
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(padding.left, currentY);
+        ctx.lineTo(width - padding.right, currentY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        // Price tag
+        ctx.fillStyle = '#ffd700';
+        ctx.fillRect(width - padding.right, currentY - 8, 60, 16);
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 10px monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(currentCandle.close.toFixed(2), width - padding.right + 3, currentY + 3);
+        
+        // Update OHLC display
+        const isUp = currentCandle.close >= currentCandle.open;
+        document.getElementById('chartOpen').textContent = currentCandle.open.toFixed(2);
+        document.getElementById('chartHigh').textContent = currentCandle.high.toFixed(2);
+        document.getElementById('chartLow').textContent = currentCandle.low.toFixed(2);
+        document.getElementById('chartClose').textContent = currentCandle.close.toFixed(2);
+        document.getElementById('chartClose').className = isUp ? 'green' : 'red';
+        document.getElementById('chartVol').textContent = currentCandle.volume.toLocaleString();
+      }
+    }
+    
+    // Find support/resistance levels using same logic as content.js
+    // Wall = quantity > 2.5x average quantity (WALL_MULTIPLIER)
+    function findSupportResistance(snapshot, minPrice, maxPrice) {
+      const levels = [];
+      if (!snapshot?.marketDepth) return levels;
+      
+      const bids = snapshot.marketDepth.bids || [];
+      const asks = snapshot.marketDepth.asks || [];
+      
+      // Calculate average quantity (same as content.js adaptive logic)
+      const allQuantities = [
+        ...bids.map(b => b.qty || b.quantity || 0),
+        ...asks.map(a => a.qty || a.quantity || 0)
+      ].filter(q => q > 0);
+      
+      if (allQuantities.length === 0) return levels;
+      
+      const avgQty = allQuantities.reduce((a, b) => a + b, 0) / allQuantities.length;
+      const WALL_MULTIPLIER = 2.5; // Same as content.js
+      const wallThreshold = avgQty * WALL_MULTIPLIER;
+      
+      // Find support walls (bids with qty > threshold)
+      bids.forEach(bid => {
+        const qty = bid.qty || bid.quantity || 0;
+        if (qty > wallThreshold && bid.price >= minPrice && bid.price <= maxPrice) {
+          levels.push({
+            type: 'support',
+            price: bid.price,
+            strength: qty,
+            ratio: (qty / avgQty).toFixed(1)
+          });
+        }
+      });
+      
+      // Find resistance walls (asks with qty > threshold)
+      asks.forEach(ask => {
+        const qty = ask.qty || ask.quantity || 0;
+        if (qty > wallThreshold && ask.price >= minPrice && ask.price <= maxPrice) {
+          levels.push({
+            type: 'resistance',
+            price: ask.price,
+            strength: qty,
+            ratio: (qty / avgQty).toFixed(1)
+          });
+        }
+      });
+      
+      // Sort by strength (strongest first) and filter out levels too close together
+      levels.sort((a, b) => b.strength - a.strength);
+      
+      // Keep only the strongest level if multiple are within 0.1% of each other
+      const filteredLevels = [];
+      const minPriceGap = (maxPrice - minPrice) * 0.03; // 3% of visible range
+      
+      levels.forEach(level => {
+        const tooClose = filteredLevels.some(existing => 
+          Math.abs(existing.price - level.price) < minPriceGap
+        );
+        if (!tooClose) {
+          filteredLevels.push(level);
+        }
+      });
+      
+      // Return max 3 levels (strongest ones)
+      return filteredLevels.slice(0, 3);
+    }
+    
+    // Resize handler for chart
+    window.addEventListener('resize', () => {
+      if (data.length > 0) {
+        renderCandlestickChart(currentIndex);
+      }
+    });
+    
+    function renderPressureBar(snapshot) {
+      const trades = snapshot.recentTrades || [];
+      const bestBid = snapshot.marketDepth?.bids?.[0]?.price || 0;
+      const bestAsk = snapshot.marketDepth?.asks?.[0]?.price || 0;
+      
+      let buyVolume = 0;
+      let sellVolume = 0;
+      
+      // Calculate buy/sell pressure from trades
+      // Trades at or below best bid = aggressive sellers hitting bids
+      // Trades at or above best ask = aggressive buyers lifting offers
+      // Support both 'quantity' and 'qty' field names
+      trades.forEach(t => {
+        const qty = t.quantity || t.qty || 0;
+        if (t.price <= bestBid) {
+          sellVolume += qty;
+        } else if (t.price >= bestAsk) {
+          buyVolume += qty;
+        } else {
+          // Mid-price trades: split 50/50 or use price proximity
+          const midPrice = (bestBid + bestAsk) / 2;
+          if (t.price >= midPrice) {
+            buyVolume += qty;
+          } else {
+            sellVolume += qty;
+          }
+        }
+      });
+      
+      const totalVolume = buyVolume + sellVolume;
+      
+      // Calculate percentages
+      let buyPercent = 50;
+      let sellPercent = 50;
+      
+      if (totalVolume > 0) {
+        buyPercent = (buyVolume / totalVolume) * 100;
+        sellPercent = (sellVolume / totalVolume) * 100;
+      }
+      
+      // Update bars
+      document.getElementById('buyPressureBar').style.width = buyPercent + '%';
+      document.getElementById('sellPressureBar').style.width = sellPercent + '%';
+      
+      // Update volume labels
+      document.getElementById('buyVolume').textContent = `Buy: ${buyVolume.toLocaleString()}`;
+      document.getElementById('sellVolume').textContent = `Sell: ${sellVolume.toLocaleString()}`;
+      
+      // Calculate and display ratio
+      let ratioText = '1:1';
+      if (buyVolume > 0 && sellVolume > 0) {
+        if (buyVolume >= sellVolume) {
+          const ratio = (buyVolume / sellVolume).toFixed(1);
+          ratioText = `${ratio}:1 BUY`;
+        } else {
+          const ratio = (sellVolume / buyVolume).toFixed(1);
+          ratioText = `${ratio}:1 SELL`;
+        }
+      } else if (buyVolume > 0) {
+        ratioText = '∞:1 BUY';
+      } else if (sellVolume > 0) {
+        ratioText = '∞:1 SELL';
+      }
+      document.getElementById('pressureRatio').textContent = ratioText;
+      
+      // Update pressure indicator
+      const indicator = document.getElementById('pressureIndicator');
+      const imbalance = buyPercent - sellPercent;
+      
+      if (imbalance > 20) {
+        indicator.textContent = '🚀 STRONG BUYING';
+        indicator.className = 'pressure-indicator bullish';
+      } else if (imbalance > 10) {
+        indicator.textContent = '📈 BUYERS IN CONTROL';
+        indicator.className = 'pressure-indicator bullish';
+      } else if (imbalance < -20) {
+        indicator.textContent = '💥 STRONG SELLING';
+        indicator.className = 'pressure-indicator bearish';
+      } else if (imbalance < -10) {
+        indicator.textContent = '📉 SELLERS IN CONTROL';
+        indicator.className = 'pressure-indicator bearish';
+      } else {
+        indicator.textContent = '⚖️ BALANCED';
+        indicator.className = 'pressure-indicator neutral';
+      }
+    }
+
+    function renderAllSignals(signals) {
+      const signalsBody = document.getElementById('signalsBody');
+      if (signals.length === 0) {
+        signalsBody.innerHTML = '<div class="empty-state">No signals detected</div>';
+        return;
+      }
+      
+      signalsBody.innerHTML = signals.map(s => {
+        let cls = '';
+        if (s.type?.includes('BUY')) cls = 'buy';
+        else if (s.type?.includes('SELL')) cls = 'sell';
+        else if (s.type?.includes('SPOOF')) cls = 'spoof';
+        else if (s.type?.includes('PANIC')) cls = 'panic';
+        else if (s.type?.includes('MELT')) cls = 'melt';
+        
+        return `
+          <div class="signal-row ${cls}">
+            <div class="type">${s.type || 'SIGNAL'}</div>
+            <div class="details">
+              ${s.price ? `Price: ${s.price}` : ''}
+              ${s.val ? ` • ₹${s.val}L` : ''}
+              <br>${s.time || ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Play/Pause
+    document.getElementById('btnPlay').addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      const btn = document.getElementById('btnPlay');
+      
+      if (isPlaying) {
+        btn.textContent = '⏸ Pause';
+        btn.className = 'btn-pause';
+        playInterval = setInterval(() => {
+          currentIndex++;
+          if (currentIndex >= data.length) {
+            currentIndex = 0;
+          }
+          renderSnapshot(currentIndex);
+        }, 100); // 10x speed
+      } else {
+        btn.textContent = '▶ Play';
+        btn.className = 'btn-play';
+        clearInterval(playInterval);
+      }
+    });
+
+    // Export
+    document.getElementById('btnExport').addEventListener('click', () => {
+      const html = document.documentElement.outerHTML;
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'dhan_report.html';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Dhan Market Depth Recorder",
+  "version": "1.1",
+  "description": "Scrapes and downloads market depth data from Dhan DOM.",
+  "permissions": ["activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://tv.dhan.co/*", 
+        "https://web.dhan.co/*",
+        "https://*.dhan.co/*"
+      ],
+      "js": ["content.js"]
+    }
+  ]
+}
