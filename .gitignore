@@ -39,6 +39,9 @@ ICICIBANK_*.json
 STATEBANKOFINDIA_*.json
 DABURINDIA_*.json
 
-# CSV data (too large for git - optional, uncomment if needed)
-# api-scrip-master-detailed.csv
+# CSV data (too large for git)
+api-scrip-master-detailed.csv
+
+# Large data files (use Git LFS if needed)
+src/high vol/*.json
 
