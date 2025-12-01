@@ -1,26 +1,42 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
   <title>Dhan Data Viewer</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { 
-      font-family: 'Segoe UI', sans-serif; 
-      background: #0a0a0a; 
-      color: #e0e0e0; 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      color: #e0e0e0;
       padding: 20px;
       min-height: 100vh;
     }
+
     .header {
       text-align: center;
       padding: 20px;
       border-bottom: 1px solid #333;
       margin-bottom: 20px;
     }
-    .header h1 { color: #fff; font-size: 24px; margin-bottom: 10px; }
-    .header p { color: #888; font-size: 14px; }
-    
+
+    .header h1 {
+      color: #fff;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: #888;
+      font-size: 14px;
+    }
+
     .upload-zone {
       border: 2px dashed #444;
       border-radius: 8px;
@@ -30,17 +46,33 @@
       cursor: pointer;
       transition: border-color 0.3s;
     }
-    .upload-zone:hover { border-color: #007bff; }
-    .upload-zone input { display: none; }
-    .upload-zone label { cursor: pointer; color: #aaa; font-size: 16px; }
-    .upload-zone label span { color: #007bff; text-decoration: underline; }
-    
+
+    .upload-zone:hover {
+      border-color: #007bff;
+    }
+
+    .upload-zone input {
+      display: none;
+    }
+
+    .upload-zone label {
+      cursor: pointer;
+      color: #aaa;
+      font-size: 16px;
+    }
+
+    .upload-zone label span {
+      color: #007bff;
+      text-decoration: underline;
+    }
+
     .stats-bar {
       display: flex;
       gap: 15px;
       margin-bottom: 20px;
       flex-wrap: wrap;
     }
+
     .stat-card {
       background: #1a1a1a;
       border: 1px solid #333;
@@ -49,11 +81,27 @@
       flex: 1;
       min-width: 150px;
     }
-    .stat-card .label { color: #888; font-size: 12px; margin-bottom: 5px; }
-    .stat-card .value { color: #fff; font-size: 20px; font-weight: bold; }
-    .stat-card .value.green { color: #4caf50; }
-    .stat-card .value.red { color: #ff5252; }
-    
+
+    .stat-card .label {
+      color: #888;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .stat-card .value {
+      color: #fff;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .stat-card .value.green {
+      color: #4caf50;
+    }
+
+    .stat-card .value.red {
+      color: #ff5252;
+    }
+
     /* Pressure Bar */
     .pressure-container {
       background: #1a1a1a;
@@ -62,15 +110,28 @@
       padding: 15px 20px;
       margin-bottom: 20px;
     }
+
     .pressure-header {
       display: flex;
       justify-content: space-between;
       margin-bottom: 10px;
       font-size: 12px;
     }
-    .pressure-header .buy-label { color: #4caf50; font-weight: bold; }
-    .pressure-header .sell-label { color: #ff5252; font-weight: bold; }
-    .pressure-header .neutral { color: #888; }
+
+    .pressure-header .buy-label {
+      color: #4caf50;
+      font-weight: bold;
+    }
+
+    .pressure-header .sell-label {
+      color: #ff5252;
+      font-weight: bold;
+    }
+
+    .pressure-header .neutral {
+      color: #888;
+    }
+
     .pressure-bar-wrapper {
       position: relative;
       height: 32px;
@@ -78,22 +139,26 @@
       border-radius: 4px;
       overflow: hidden;
     }
+
     .pressure-bar {
       position: absolute;
       top: 0;
       height: 100%;
       transition: width 0.3s ease;
     }
+
     .pressure-bar.buy {
       left: 0;
       background: linear-gradient(90deg, #4caf50, #2e7d32);
       border-radius: 4px 0 0 4px;
     }
+
     .pressure-bar.sell {
       right: 0;
       background: linear-gradient(270deg, #ff5252, #c62828);
       border-radius: 0 4px 4px 0;
     }
+
     .pressure-center-line {
       position: absolute;
       left: 50%;
@@ -104,14 +169,22 @@
       transform: translateX(-50%);
       z-index: 1;
     }
+
     .pressure-values {
       display: flex;
       justify-content: space-between;
       margin-top: 8px;
       font-size: 13px;
     }
-    .pressure-values .buy-vol { color: #4caf50; }
-    .pressure-values .sell-vol { color: #ff5252; }
+
+    .pressure-values .buy-vol {
+      color: #4caf50;
+    }
+
+    .pressure-values .sell-vol {
+      color: #ff5252;
+    }
+
     .pressure-values .ratio {
       color: #ffd700;
       font-weight: bold;
@@ -119,6 +192,7 @@
       padding: 2px 10px;
       border-radius: 4px;
     }
+
     .pressure-indicator {
       text-align: center;
       margin-top: 8px;
@@ -128,11 +202,26 @@
       border-radius: 4px;
       display: inline-block;
     }
-    .pressure-indicator.bullish { background: rgba(76, 175, 80, 0.2); color: #4caf50; }
-    .pressure-indicator.bearish { background: rgba(255, 82, 82, 0.2); color: #ff5252; }
-    .pressure-indicator.neutral { background: rgba(255, 215, 0, 0.2); color: #ffd700; }
-    .pressure-center { text-align: center; }
-    
+
+    .pressure-indicator.bullish {
+      background: rgba(76, 175, 80, 0.2);
+      color: #4caf50;
+    }
+
+    .pressure-indicator.bearish {
+      background: rgba(255, 82, 82, 0.2);
+      color: #ff5252;
+    }
+
+    .pressure-indicator.neutral {
+      background: rgba(255, 215, 0, 0.2);
+      color: #ffd700;
+    }
+
+    .pressure-center {
+      text-align: center;
+    }
+
     /* Candlestick Chart */
     .chart-container {
       background: #1a1a1a;
@@ -141,6 +230,7 @@
       padding: 15px;
       margin-bottom: 20px;
     }
+
     .chart-header {
       display: flex;
       justify-content: space-between;
@@ -149,11 +239,18 @@
       padding-bottom: 10px;
       border-bottom: 1px solid #333;
     }
-    .chart-header h3 { color: #fff; font-size: 14px; margin: 0; }
+
+    .chart-header h3 {
+      color: #fff;
+      font-size: 14px;
+      margin: 0;
+    }
+
     .chart-controls {
       display: flex;
       gap: 8px;
     }
+
     .chart-controls select {
       background: #252525;
       color: #e0e0e0;
@@ -163,16 +260,26 @@
       font-size: 12px;
       cursor: pointer;
     }
+
     .chart-info {
       display: flex;
       gap: 20px;
       font-size: 12px;
       color: #888;
     }
-    .chart-info span { margin-right: 5px; }
-    .chart-info .green { color: #4caf50; }
-    .chart-info .red { color: #ff5252; }
-    
+
+    .chart-info span {
+      margin-right: 5px;
+    }
+
+    .chart-info .green {
+      color: #4caf50;
+    }
+
+    .chart-info .red {
+      color: #ff5252;
+    }
+
     .candlestick-chart {
       position: relative;
       height: 250px;
@@ -180,10 +287,12 @@
       border-radius: 4px;
       overflow: hidden;
     }
+
     .chart-canvas {
       width: 100%;
       height: 100%;
     }
+
     .price-axis {
       position: absolute;
       right: 0;
@@ -198,10 +307,12 @@
       font-size: 10px;
       color: #888;
     }
+
     .price-label {
       text-align: right;
       padding-right: 5px;
     }
+
     .current-price-line {
       position: absolute;
       right: 60px;
@@ -209,6 +320,7 @@
       background: #ffd700;
       pointer-events: none;
     }
+
     .current-price-tag {
       position: absolute;
       right: 0;
@@ -219,7 +331,7 @@
       font-weight: bold;
       border-radius: 2px;
     }
-    
+
     .controls {
       display: flex;
       gap: 10px;
@@ -227,7 +339,12 @@
       align-items: center;
       flex-wrap: wrap;
     }
-    .controls input[type="range"] { flex: 1; min-width: 200px; }
+
+    .controls input[type="range"] {
+      flex: 1;
+      min-width: 200px;
+    }
+
     .controls button {
       padding: 8px 16px;
       border: none;
@@ -235,9 +352,22 @@
       cursor: pointer;
       font-weight: bold;
     }
-    .controls .btn-play { background: #28a745; color: white; }
-    .controls .btn-pause { background: #ffc107; color: black; }
-    .controls .btn-export { background: #007bff; color: white; }
+
+    .controls .btn-play {
+      background: #28a745;
+      color: white;
+    }
+
+    .controls .btn-pause {
+      background: #ffc107;
+      color: black;
+    }
+
+    .controls .btn-export {
+      background: #007bff;
+      color: white;
+    }
+
     .timestamp-display {
       background: #1a1a1a;
       padding: 8px 15px;
@@ -245,25 +375,32 @@
       font-family: monospace;
       color: #ffd700;
     }
-    
+
     .main-content {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       gap: 20px;
     }
+
     @media (max-width: 1200px) {
-      .main-content { grid-template-columns: 1fr 1fr; }
+      .main-content {
+        grid-template-columns: 1fr 1fr;
+      }
     }
+
     @media (max-width: 800px) {
-      .main-content { grid-template-columns: 1fr; }
+      .main-content {
+        grid-template-columns: 1fr;
+      }
     }
-    
+
     .panel {
       background: #1a1a1a;
       border: 1px solid #333;
       border-radius: 8px;
       overflow: hidden;
     }
+
     .panel-header {
       background: #252525;
       padding: 12px 15px;
@@ -271,15 +408,28 @@
       font-size: 14px;
       border-bottom: 1px solid #333;
     }
-    .panel-header.bids { border-left: 3px solid #4caf50; }
-    .panel-header.asks { border-left: 3px solid #ff5252; }
-    .panel-header.trades { border-left: 3px solid #2196f3; }
-    .panel-header.signals { border-left: 3px solid #ff9800; }
-    
+
+    .panel-header.bids {
+      border-left: 3px solid #4caf50;
+    }
+
+    .panel-header.asks {
+      border-left: 3px solid #ff5252;
+    }
+
+    .panel-header.trades {
+      border-left: 3px solid #2196f3;
+    }
+
+    .panel-header.signals {
+      border-left: 3px solid #ff9800;
+    }
+
     .depth-table {
       width: 100%;
       border-collapse: collapse;
     }
+
     .depth-table th {
       text-align: left;
       padding: 8px 12px;
@@ -288,46 +438,138 @@
       text-transform: uppercase;
       border-bottom: 1px solid #333;
     }
+
     .depth-table td {
       padding: 8px 12px;
       font-size: 13px;
       border-bottom: 1px solid #222;
     }
-    .depth-table tr:hover { background: #252525; }
-    .depth-table .price { font-weight: bold; }
-    .depth-table .bid-price { color: #4caf50; }
-    .depth-table .ask-price { color: #ff5252; }
-    .depth-table .qty { color: #fff; }
+
+    .depth-table tr:hover {
+      background: #252525;
+    }
+
+    .depth-table .price {
+      font-weight: bold;
+    }
+
+    .depth-table .bid-price {
+      color: #4caf50;
+    }
+
+    .depth-table .ask-price {
+      color: #ff5252;
+    }
+
+    .depth-table .qty {
+      color: #fff;
+    }
+
     .depth-table .bar {
       height: 4px;
       border-radius: 2px;
       margin-top: 4px;
     }
-    .depth-table .bar.bid { background: linear-gradient(90deg, #4caf50, transparent); }
-    .depth-table .bar.ask { background: linear-gradient(270deg, #ff5252, transparent); }
-    
-    .trade-row { display: flex; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid #222; font-size: 13px; }
-    .trade-row:hover { background: #252525; }
-    .trade-row .time { color: #888; }
-    .trade-row .qty { color: #fff; }
-    .trade-row .price.buy { color: #4caf50; }
-    .trade-row .price.sell { color: #ff5252; }
-    
-    .signal-row { padding: 10px 12px; border-bottom: 1px solid #222; font-size: 13px; }
-    .signal-row.buy { border-left: 3px solid #4caf50; background: rgba(76, 175, 80, 0.1); }
-    .signal-row.sell { border-left: 3px solid #ff5252; background: rgba(255, 82, 82, 0.1); }
-    .signal-row.spoof { border-left: 3px solid #ff9800; background: rgba(255, 152, 0, 0.1); }
-    .signal-row.panic { border-left: 3px solid #f44336; background: rgba(244, 67, 54, 0.1); }
-    .signal-row.melt { border-left: 3px solid #ff4444; background: rgba(255, 68, 68, 0.1); }
-    .signal-row .type { font-weight: bold; margin-bottom: 3px; }
-    .signal-row .details { color: #888; font-size: 12px; }
-    
-    .empty-state { padding: 40px; text-align: center; color: #666; }
-    
-    .signals-panel { grid-column: span 3; }
-    @media (max-width: 1200px) { .signals-panel { grid-column: span 2; } }
-    @media (max-width: 800px) { .signals-panel { grid-column: span 1; } }
-    
+
+    .depth-table .bar.bid {
+      background: linear-gradient(90deg, #4caf50, transparent);
+    }
+
+    .depth-table .bar.ask {
+      background: linear-gradient(270deg, #ff5252, transparent);
+    }
+
+    .trade-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-bottom: 1px solid #222;
+      font-size: 13px;
+    }
+
+    .trade-row:hover {
+      background: #252525;
+    }
+
+    .trade-row .time {
+      color: #888;
+    }
+
+    .trade-row .qty {
+      color: #fff;
+    }
+
+    .trade-row .price.buy {
+      color: #4caf50;
+    }
+
+    .trade-row .price.sell {
+      color: #ff5252;
+    }
+
+    .signal-row {
+      padding: 10px 12px;
+      border-bottom: 1px solid #222;
+      font-size: 13px;
+    }
+
+    .signal-row.buy {
+      border-left: 3px solid #4caf50;
+      background: rgba(76, 175, 80, 0.1);
+    }
+
+    .signal-row.sell {
+      border-left: 3px solid #ff5252;
+      background: rgba(255, 82, 82, 0.1);
+    }
+
+    .signal-row.spoof {
+      border-left: 3px solid #ff9800;
+      background: rgba(255, 152, 0, 0.1);
+    }
+
+    .signal-row.panic {
+      border-left: 3px solid #f44336;
+      background: rgba(244, 67, 54, 0.1);
+    }
+
+    .signal-row.melt {
+      border-left: 3px solid #ff4444;
+      background: rgba(255, 68, 68, 0.1);
+    }
+
+    .signal-row .type {
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+
+    .signal-row .details {
+      color: #888;
+      font-size: 12px;
+    }
+
+    .empty-state {
+      padding: 40px;
+      text-align: center;
+      color: #666;
+    }
+
+    .signals-panel {
+      grid-column: span 3;
+    }
+
+    @media (max-width: 1200px) {
+      .signals-panel {
+        grid-column: span 2;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .signals-panel {
+        grid-column: span 1;
+      }
+    }
+
     .signals-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -338,6 +580,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="header">
     <h1>📊 Dhan Market Data Viewer</h1>
@@ -435,7 +678,12 @@
       <div class="panel">
         <div class="panel-header bids">BIDS (Support)</div>
         <table class="depth-table">
-          <thead><tr><th>Price</th><th>Quantity</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Price</th>
+              <th>Quantity</th>
+            </tr>
+          </thead>
           <tbody id="bidsBody"></tbody>
         </table>
       </div>
@@ -443,7 +691,12 @@
       <div class="panel">
         <div class="panel-header asks">ASKS (Resistance)</div>
         <table class="depth-table">
-          <thead><tr><th>Price</th><th>Quantity</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Price</th>
+              <th>Quantity</th>
+            </tr>
+          </thead>
           <tbody id="asksBody"></tbody>
         </table>
       </div>
@@ -457,10 +710,283 @@
         <div class="panel-header signals">ALL SIGNALS (Chronological)</div>
         <div class="signals-grid" id="signalsBody"></div>
       </div>
+
+      <div class="panel" style="grid-column: span 3;">
+        <div class="panel-header" style="border-left: 3px solid #00d4ff;">🏦 HYBRID QUANT STRATEGY TEST</div>
+        <div style="padding: 15px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div style="background: #0d0d15; padding: 12px; border-radius: 6px; border: 1px solid #333;">
+              <div style="color: #666; font-size: 11px; margin-bottom: 5px;">STATE</div>
+              <div id="strategyState" style="color: #00d4ff; font-weight: bold; font-size: 14px;">--</div>
+            </div>
+            <div style="background: #0d0d15; padding: 12px; border-radius: 6px; border: 1px solid #333;">
+              <div style="color: #666; font-size: 11px; margin-bottom: 5px;">VWAP</div>
+              <div id="strategyVWAP" style="color: #fff; font-weight: bold; font-size: 14px;">--</div>
+            </div>
+            <div style="background: #0d0d15; padding: 12px; border-radius: 6px; border: 1px solid #333;">
+              <div style="color: #666; font-size: 11px; margin-bottom: 5px;">ZONES</div>
+              <div id="strategyZones" style="color: #fff; font-weight: bold; font-size: 14px;">D:0 S:0</div>
+            </div>
+          </div>
+          <div
+            style="background: #0d0d15; padding: 12px; border-radius: 6px; border: 1px solid #333; margin-bottom: 15px;">
+            <div style="color: #666; font-size: 11px; margin-bottom: 8px;">SECTOR SYNC</div>
+            <div id="strategySector" style="color: #888; font-size: 12px;">No sector data (single file mode)</div>
+          </div>
+          <div
+            style="background: #111118; padding: 12px; border-radius: 6px; border: 1px solid #333; min-height: 100px;">
+            <div style="color: #666; font-size: 11px; margin-bottom: 8px;">STRATEGY SIGNALS</div>
+            <div id="strategySignals" style="color: #444; font-style: italic;">Analyzing...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trade Simulator Panel -->
+      <div class="panel" style="grid-column: span 3;">
+        <div class="panel-header" style="border-left: 3px solid #ffd700;">💰 TRADE SIMULATOR (LONG ONLY)</div>
+        <div style="padding: 15px;">
+          <!-- Info Banner -->
+          <div
+            style="background: #1a3a5c; padding: 8px 12px; border-radius: 4px; margin-bottom: 15px; font-size: 11px; color: #88d4ff; border-left: 3px solid #00d4ff;">
+            <strong>OPTIMIZED Strategy:</strong> 2 entry rules (VWAP+Zone+Buyers OR Tape Flip) • Max loss cap: 0.5% •
+            Max hold: 200 snapshots • Hard stop loss enforced • Price gap/spread validation • Min 30 snapshots cooldown
+            • Max 1 trade per 100 snapshots
+          </div>
+
+          <!-- Controls -->
+          <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center; flex-wrap: wrap;">
+            <button id="btnStartSim"
+              style="padding: 8px 16px; background: #00c853; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">▶
+              Start Simulator</button>
+            <button id="btnResetSim"
+              style="padding: 8px 16px; background: #666; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">⟳
+              Reset</button>
+            <label style="color: #888; font-size: 12px; display: flex; align-items: center; gap: 8px;">
+              <input type="checkbox" id="chkAutoTrade" checked style="cursor: pointer;">
+              Auto Trade
+            </label>
+            <label style="color: #888; font-size: 12px; display: flex; align-items: center; gap: 8px;">
+              <input type="checkbox" id="chkSectorFilter" checked style="cursor: pointer;">
+              Sector Filter
+            </label>
+            <div style="margin-left: auto; display: flex; gap: 15px;">
+              <div style="font-size: 11px; color: #666;">
+                SL: <input type="number" id="inputStopLoss" value="0.3" min="0.1" max="5" step="0.1"
+                  style="width: 50px; background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px; border-radius: 4px;">%
+              </div>
+              <div style="font-size: 11px; color: #666;">
+                TP: <input type="number" id="inputTakeProfit" value="0.5" min="0.1" max="10" step="0.1"
+                  style="width: 50px; background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px; border-radius: 4px;">%
+              </div>
+            </div>
+          </div>
+
+          <!-- Current Position & Stats -->
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 15px;">
+            <div style="background: #0d0d15; padding: 12px; border-radius: 6px; border: 1px solid #333;">
+              <div style="color: #666; font-size: 11px; margin-bottom: 5px;">POSITION</div>
+              <div id="simPosition" style="color: #888; font-weight: bold; font-size: 14px;">FLAT</div>
+            </div>
+            <div style="background: #0d0d15; padding: 12px; border-radius: 6px; border: 1px solid #333;">
+              <div style="color: #666; font-size: 11px; margin-bottom: 5px;">ENTRY PRICE</div>
+              <div id="simEntryPrice" style="color: #fff; font-weight: bold; font-size: 14px;">--</div>
+            </div>
+            <div style="background: #0d0d15; padding: 12px; border-radius: 6px; border: 1px solid #333;">
+              <div style="color: #666; font-size: 11px; margin-bottom: 5px;">P&L</div>
+              <div id="simPnL" style="color: #888; font-weight: bold; font-size: 14px;">₹0.00</div>
+            </div>
+            <div style="background: #0d0d15; padding: 12px; border-radius: 6px; border: 1px solid #333;">
+              <div style="color: #666; font-size: 11px; margin-bottom: 5px;">TOTAL P&L</div>
+              <div id="simTotalPnL" style="color: #888; font-weight: bold; font-size: 14px;">₹0.00</div>
+            </div>
+          </div>
+
+          <!-- Trade Stats -->
+          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 15px;">
+            <div
+              style="background: #0d0d15; padding: 10px; border-radius: 6px; border: 1px solid #333; text-align: center;">
+              <div style="color: #666; font-size: 10px; margin-bottom: 3px;">TOTAL TRADES</div>
+              <div id="simTotalTrades" style="color: #fff; font-weight: bold; font-size: 16px;">0</div>
+            </div>
+            <div
+              style="background: #0d0d15; padding: 10px; border-radius: 6px; border: 1px solid #333; text-align: center;">
+              <div style="color: #666; font-size: 10px; margin-bottom: 3px;">WIN RATE</div>
+              <div id="simWinRate" style="color: #00c853; font-weight: bold; font-size: 16px;">0%</div>
+            </div>
+            <div
+              style="background: #0d0d15; padding: 10px; border-radius: 6px; border: 1px solid #333; text-align: center;">
+              <div style="color: #666; font-size: 10px; margin-bottom: 3px;">AVG WIN</div>
+              <div id="simAvgWin" style="color: #00c853; font-weight: bold; font-size: 16px;">₹0</div>
+            </div>
+            <div
+              style="background: #0d0d15; padding: 10px; border-radius: 6px; border: 1px solid #333; text-align: center;">
+              <div style="color: #666; font-size: 10px; margin-bottom: 3px;">AVG LOSS</div>
+              <div id="simAvgLoss" style="color: #ff4444; font-weight: bold; font-size: 16px;">₹0</div>
+            </div>
+            <div
+              style="background: #0d0d15; padding: 10px; border-radius: 6px; border: 1px solid #333; text-align: center;">
+              <div style="color: #666; font-size: 10px; margin-bottom: 3px;">PROFIT FACTOR</div>
+              <div id="simProfitFactor" style="color: #ffd700; font-weight: bold; font-size: 16px;">0.00</div>
+            </div>
+          </div>
+
+          <!-- Trade History -->
+          <div style="background: #0d0d15; border: 1px solid #333; border-radius: 6px; overflow: hidden;">
+            <div
+              style="background: #1a1a1a; padding: 10px; border-bottom: 1px solid #333; font-weight: bold; font-size: 12px; color: #fff;">
+              TRADE HISTORY</div>
+            <div id="simTradeHistory" style="max-height: 200px; overflow-y: auto; padding: 10px;">
+              <div style="color: #666; text-align: center; padding: 20px; font-style: italic;">No trades yet</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
+    // --- CONFIGURATION & STRATEGY ---
+    const STRATEGY = {
+      STOP_LOSS_PCT: 0.7,
+      TAKE_PROFIT_PCT: 1.0,
+      MIN_CONFIDENCE: 60,
+      RVOL_THRESHOLD: 1.5
+    };
+
+    const NO_TRADE_WINDOW = {
+      start: '11:30',
+      end: '13:00'
+    };
+
+    class SignalPanel {
+      constructor() {
+        this.position = 'FLAT';
+      }
+
+      generateSignal(marketData, analysis) {
+        // Time Filter
+        const timeStr = marketData.timeStr || '';
+        if (timeStr >= NO_TRADE_WINDOW.start && timeStr < NO_TRADE_WINDOW.end) {
+          return {
+            type: 'WAIT',
+            icon: '☕',
+            title: 'LUNCH BREAK',
+            action: ['No new entries'],
+            reason: `Low volatility zone (${NO_TRADE_WINDOW.start} - ${NO_TRADE_WINDOW.end}). Avoid chop.`,
+            edgeFactors: [],
+            confidenceScore: 0
+          };
+        }
+
+        let confidence = 50;
+        const edgeFactors = [];
+        let signalType = 'WAIT';
+        let action = ['Wait for setup'];
+        let icon = '⏳';
+
+        // 1. Trend (VWAP)
+        if (marketData.ltp > analysis.vwap) {
+          confidence += 10;
+          edgeFactors.push({ icon: '📈', text: 'Above VWAP', weight: 10 });
+        } else {
+          confidence -= 10;
+          edgeFactors.push({ icon: '📉', text: 'Below VWAP', weight: -10 });
+        }
+
+        // 2. Volume (RVOL)
+        if (analysis.rvol > 1.5) {
+          confidence += 15;
+          edgeFactors.push({ icon: '🔥', text: `High Vol (RVOL ${analysis.rvol.toFixed(1)}x)`, weight: 15 });
+        }
+
+        // 3. Option Chain (PCR) - Stock Specific Weighting
+        // HDFC: Strong Edge (+10) - The Whale 🐳
+        // SBIN: No Edge (0) - The Beast 🐂 (Trade Price)
+        // ICICI: No Edge (0) - The Trap ⚠️ (Avoid Options)
+
+        // Detect Stock from filename (stored in global variable or passed in)
+        // For now, we assume HDFC if not specified, but let's try to be smart.
+        const stockName = window.currentFileName || 'HDFCBANK';
+
+        let pcrWeight = 0;
+        if (stockName.toUpperCase().includes('HDFC')) pcrWeight = 10;
+
+        if (pcrWeight > 0) {
+          if (analysis.pcrTrend > 0.05) {
+            confidence += pcrWeight;
+            edgeFactors.push({ icon: '🐳', text: 'Smart Money Bullish', weight: pcrWeight });
+          } else if (analysis.pcrTrend < -0.05) {
+            confidence -= pcrWeight;
+            edgeFactors.push({ icon: '🐻', text: 'Smart Money Bearish', weight: -pcrWeight });
+          }
+        }
+
+        // 4. Walls
+        const nearSupport = analysis.zones.demand.some(z => Math.abs(marketData.ltp - z.price) < marketData.ltp * 0.001);
+        const nearResistance = analysis.zones.supply.some(z => Math.abs(marketData.ltp - z.price) < marketData.ltp * 0.001);
+
+        if (nearSupport) {
+          confidence += 20;
+          edgeFactors.push({ icon: '🧱', text: ' bouncing off Wall', weight: 20 });
+        }
+        if (nearResistance) {
+          confidence -= 20;
+          edgeFactors.push({ icon: '🧱', text: 'Hitting Resistance Wall', weight: -20 });
+        }
+
+        // 5. Global Context (The Triad)
+        // VIX Filter
+        if (analysis.market && analysis.market.vix > 16) {
+          confidence -= 10; // Penalty for High VIX
+          edgeFactors.push({ icon: '⚠️', text: `High VIX (${analysis.market.vix})`, weight: -10 });
+        }
+
+        // Sector Sync (BankNifty)
+        if (analysis.market && analysis.market.sectorTrend) {
+          const sector = analysis.market.sectorTrend;
+          if (confidence > 50 && sector === 'BEARISH') {
+            confidence -= 30; // Block Buy if Sector is Bearish
+            edgeFactors.push({ icon: '⛔', text: 'Sector Bearish', weight: -30 });
+          } else if (confidence < 50 && sector === 'BULLISH') {
+            confidence += 30; // Block Sell if Sector is Bullish
+            edgeFactors.push({ icon: '⛔', text: 'Sector Bullish', weight: +30 });
+          } else if (confidence > 50 && sector === 'BULLISH') {
+            confidence += 10; // Boost Buy
+            edgeFactors.push({ icon: '🌊', text: 'Sector Aligned', weight: +10 });
+          }
+        }
+
+        // Decision
+        let suggestedOption = '';
+        if (confidence >= 70) {
+          signalType = 'BUY';
+          icon = '🚀';
+          action = ['Enter LONG', 'Buy CE'];
+          const strike = Math.floor(marketData.ltp / 10) * 10; // Approx ATM
+          suggestedOption = `${strike} CE`;
+        } else if (confidence <= 30) {
+          signalType = 'SELL';
+          icon = '🔻';
+          action = ['Enter SHORT', 'Buy PE'];
+          const strike = Math.ceil(marketData.ltp / 10) * 10; // Approx ATM
+          suggestedOption = `${strike} PE`;
+        }
+
+        return {
+          type: signalType,
+          icon,
+          title: `${signalType} SIGNAL`,
+          action,
+          reason: `Confidence: ${confidence}%`,
+          edgeFactors,
+          confidenceScore: confidence,
+          suggestedOption
+        };
+      }
+    }
+
+    const signalPanel = new SignalPanel();
+
     let data = [];
     let currentIndex = 0;
     let isPlaying = false;
@@ -486,26 +1012,77 @@
       }
     });
 
-    function handleFile(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          data = JSON.parse(event.target.result);
+    async function handleFile(e) {
+      const files = Array.from(e.target.files);
+      if (files.length === 0) return;
+
+      let mainFile = null;
+      window.sectorData = [];
+      window.vixData = [];
+
+      // Helper to read file
+      const readFile = (file) => new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (event) => resolve({ name: file.name, content: event.target.result });
+        reader.readAsText(file);
+      });
+
+      try {
+        const loadedFiles = await Promise.all(files.map(readFile));
+
+        loadedFiles.forEach(f => {
+          const json = JSON.parse(f.content);
+          // Check filename or content to identify
+          if (f.name.includes('BANKNIFTY') || f.name.includes('NIFTY_BANK')) {
+            window.sectorData = json.data || json; // Handle raw vs processed structure
+            console.log('Loaded Sector Data:', window.sectorData.length);
+          } else if (f.name.includes('INDIA VIX') || f.name.includes('INDIA_VIX')) {
+            window.vixData = json.data || json;
+            console.log('Loaded VIX Data:', window.vixData.length);
+          } else {
+            // Assume it's the Main Stock File
+            mainFile = f;
+            data = Array.isArray(json) ? json : (json.data || []); // Handle different formats
+            window.currentFileName = f.name;
+            console.log('Loaded Main Stock Data:', data.length);
+          }
+        });
+
+        if (data.length > 0) {
+          // Pre-process Sector/VIX for fast lookup (Map by Timestamp)
+          // Assuming format has 'Date' or 'timestamp'
+          window.sectorMap = new Map();
+          window.vixMap = new Map();
+
+          // Helper to normalize timestamp
+          const getTs = (row) => {
+            if (row.timestamp) return row.timestamp; // Unix
+            if (row.Date) return new Date(row.Date).getTime(); // ISO string
+            return 0;
+          };
+
+          if (window.sectorData.length) {
+            window.sectorData.forEach(row => window.sectorMap.set(getTs(row), row));
+          }
+          if (window.vixData.length) {
+            window.vixData.forEach(row => window.vixMap.set(getTs(row), row));
+          }
+
           initViewer();
-        } catch (err) {
-          alert('Invalid JSON file');
+        } else {
+          alert('No valid Stock Data found. Please upload a stock recording.');
         }
-      };
-      reader.readAsText(file);
+
+      } catch (err) {
+        console.error(err);
+        alert('Error loading files: ' + err.message);
+      }
     }
 
     function initViewer() {
       document.getElementById('uploadZone').style.display = 'none';
       document.getElementById('dataView').style.display = 'block';
-      
+
       // Stats
       const allSignals = data.flatMap(d => d.signals || []);
       document.getElementById('statSnapshots').textContent = data.length.toLocaleString();
@@ -513,7 +1090,7 @@
       document.getElementById('statBuys').textContent = allSignals.filter(s => s.type?.includes('BUY')).length;
       document.getElementById('statSells').textContent = allSignals.filter(s => s.type?.includes('SELL')).length;
       document.getElementById('statSpoofs').textContent = allSignals.filter(s => s.type?.includes('SPOOF')).length;
-      
+
       // Slider
       const slider = document.getElementById('slider');
       slider.max = data.length - 1;
@@ -521,53 +1098,454 @@
         currentIndex = parseInt(slider.value);
         renderSnapshot(currentIndex);
       });
-      
+
       // All Signals
       renderAllSignals(allSignals);
-      
+
       // Build candles from trade data
       buildCandles();
-      
+
       // Candle interval change handler
       document.getElementById('candleInterval').addEventListener('change', (e) => {
         candleInterval = parseInt(e.target.value);
         buildCandles();
         renderCandlestickChart(currentIndex);
       });
-      
+
       // Initial render
       renderSnapshot(0);
+
+      // Initialize strategy analyzer
+      initStrategyAnalyzer();
+
+      // Initialize trade simulator
+      initTradeSimulator();
     }
-    
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    //  HYBRID QUANT STRATEGY ANALYZER
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    let strategyState = {
+      vwap: 0,
+      vwapData: { cumTypicalVol: 0, cumVol: 0 },
+      zones: { demand: [], supply: [] },
+      discoveryMins: 15,
+      currentState: 'IDLE'
+    };
+
+    const DISCOVERY_MINS = 15;
+    const ZONE_TOLERANCE = 0.001;
+    const VWAP_TOLERANCE = 0.001;
+    const WALL_MULTIPLIER = 2.5;
+    const PANIC_VELOCITY = 10;
+    const AGGRESSOR_THRESHOLD = 0.6;
+
+    function initStrategyAnalyzer() {
+      // Calculate VWAP from all historical data
+      calculateHistoricalVWAP();
+
+      // Build zones from historical data
+      buildHistoricalZones();
+
+      // Update strategy display on snapshot change
+      const slider = document.getElementById('slider');
+      slider.addEventListener('input', () => {
+        analyzeStrategyAtSnapshot(parseInt(slider.value));
+      });
+
+      // Initial analysis
+      analyzeStrategyAtSnapshot(0);
+    }
+
+    function calculateHistoricalVWAP() {
+      strategyState.vwapData = { cumTypicalVol: 0, cumVol: 0 };
+
+      data.forEach(snapshot => {
+        // Normalize trades first
+        const trades = normalizeTrades(snapshot.recentTrades);
+
+        // Normalize depth for fallback LTP
+        const bids = normalizeDepth(snapshot.marketDepth?.bids);
+        const asks = normalizeDepth(snapshot.marketDepth?.asks);
+
+        const ltp = snapshot.ltp ||
+          (bids[0]?.price + asks[0]?.price) / 2 ||
+          bids[0]?.price ||
+          0;
+
+        if (!ltp) return;
+
+        const volume = trades.reduce((acc, t) => acc + (t.quantity || t.qty || 0), 0);
+
+        if (volume > 0) {
+          strategyState.vwapData.cumTypicalVol += ltp * volume;
+          strategyState.vwapData.cumVol += volume;
+        }
+      });
+
+      if (strategyState.vwapData.cumVol > 0) {
+        strategyState.vwap = strategyState.vwapData.cumTypicalVol / strategyState.vwapData.cumVol;
+      }
+    }
+
+    function buildHistoricalZones() {
+      strategyState.zones = { demand: [], supply: [] };
+
+      // Calculate average quantity for wall detection
+      let totalQty = 0, qtyCount = 0;
+      data.forEach(snapshot => {
+        const bids = normalizeDepth(snapshot.marketDepth?.bids);
+        const asks = normalizeDepth(snapshot.marketDepth?.asks);
+        [...bids, ...asks].forEach(level => {
+          totalQty += level.qty || level.quantity || 0;
+          qtyCount++;
+        });
+      });
+
+      const avgQty = qtyCount > 0 ? totalQty / qtyCount : 0;
+      // Lower threshold (1.5x instead of 2.5x) to find more zones
+      const wallThreshold = avgQty * 1.5;
+
+
+      // Build zones from all snapshots
+      const zoneMap = { demand: new Map(), supply: new Map() };
+
+      data.forEach(snapshot => {
+        const bids = normalizeDepth(snapshot.marketDepth?.bids);
+        const asks = normalizeDepth(snapshot.marketDepth?.asks);
+
+        bids.forEach(bid => {
+          const qty = bid.qty || bid.quantity || 0;
+          if (qty > wallThreshold) {
+            const priceKey = bid.price.toFixed(2);
+            if (!zoneMap.demand.has(priceKey)) {
+              zoneMap.demand.set(priceKey, { price: bid.price, strength: qty, count: 1 });
+            } else {
+              const existing = zoneMap.demand.get(priceKey);
+              existing.strength = Math.max(existing.strength, qty);
+              existing.count++;
+            }
+          }
+        });
+
+        asks.forEach(ask => {
+          const qty = ask.qty || ask.quantity || 0;
+          if (qty > wallThreshold) {
+            const priceKey = ask.price.toFixed(2);
+            if (!zoneMap.supply.has(priceKey)) {
+              zoneMap.supply.set(priceKey, { price: ask.price, strength: qty, count: 1 });
+            } else {
+              const existing = zoneMap.supply.get(priceKey);
+              existing.strength = Math.max(existing.strength, qty);
+              existing.count++;
+            }
+          }
+        });
+      });
+
+      // Fallback: If no zones found, use the strongest bid/ask levels from first snapshot
+      if (zoneMap.demand.size === 0 && data.length > 0) {
+        const firstSnapshot = data[0];
+        const bids = normalizeDepth(firstSnapshot.marketDepth?.bids);
+        bids.slice(0, 3).forEach(bid => {
+          const qty = bid.qty || bid.quantity || 0;
+          zoneMap.demand.set(bid.price.toFixed(2), { price: bid.price, strength: qty, count: 1 });
+        });
+      }
+
+      if (zoneMap.supply.size === 0 && data.length > 0) {
+        const firstSnapshot = data[0];
+        const asks = normalizeDepth(firstSnapshot.marketDepth?.asks);
+        asks.slice(0, 3).forEach(ask => {
+          const qty = ask.qty || ask.quantity || 0;
+          zoneMap.supply.set(ask.price.toFixed(2), { price: ask.price, strength: qty, count: 1 });
+        });
+      }
+
+      // Convert to arrays and sort by strength
+      strategyState.zones.demand = Array.from(zoneMap.demand.values())
+        .sort((a, b) => b.strength - a.strength)
+        .slice(0, 5);
+      strategyState.zones.supply = Array.from(zoneMap.supply.values())
+        .sort((a, b) => b.strength - a.strength)
+        .slice(0, 5);
+    }
+
+    // --- Data Normalization Helpers (Support Old & New Formats) ---
+    function normalizeDepth(depthArray) {
+      if (!depthArray) return [];
+      // Check if new format [[price, qty], ...]
+      if (Array.isArray(depthArray[0])) {
+        return depthArray.map(item => ({ price: item[0], qty: item[1], quantity: item[1] }));
+      }
+      // Old format [{price, qty}, ...] - Ensure both qty and quantity exist
+      return depthArray.map(item => ({
+        ...item,
+        qty: item.qty || item.quantity || 0,
+        quantity: item.quantity || item.qty || 0
+      }));
+    }
+
+    function normalizeTrades(tradesArray) {
+      if (!tradesArray) return [];
+      // Check if new format [[time, price, qty], ...]
+      if (Array.isArray(tradesArray[0])) {
+        return tradesArray.map(item => ({
+          timeStr: item[0],
+          price: item[1],
+          quantity: item[2],
+          qty: item[2] // Alias
+        }));
+      }
+      // Old format [{timeStr, price, quantity}, ...] - Ensure both qty and quantity exist
+      return tradesArray.map(item => ({
+        ...item,
+        qty: item.qty || item.quantity || 0,
+        quantity: item.quantity || item.qty || 0
+      }));
+    }
+
+    function analyzeStrategyAtSnapshot(index) {
+      const snapshot = data[index];
+      if (!snapshot) return;
+
+      // Determine state
+      const timestamp = snapshot.timestamp;
+      const isUnix = typeof timestamp === 'number';
+      const snapshotTime = isUnix ? new Date(timestamp) : new Date();
+      const startTime = isUnix ? new Date(data[0].timestamp) : new Date();
+      const elapsedMins = (snapshotTime - startTime) / (1000 * 60);
+
+      if (elapsedMins < DISCOVERY_MINS) {
+        strategyState.currentState = 'DISCOVERY';
+      } else {
+        strategyState.currentState = 'MONITORING';
+      }
+
+      // Normalize Data
+      const bids = normalizeDepth(snapshot.marketDepth?.bids);
+      const asks = normalizeDepth(snapshot.marketDepth?.asks);
+      const trades = normalizeTrades(snapshot.recentTrades);
+
+      // Get current price
+      const bestBid = bids[0]?.price || 0;
+      const bestAsk = asks[0]?.price || 0;
+      const ltp = snapshot.ltp || (bestBid + bestAsk) / 2 || bestBid;
+
+      // Analyze tape
+      const tape = analyzeTapeForStrategy(trades, bestBid, bestAsk);
+
+      // Check zones (Walls)
+      const inDemandZone = strategyState.zones.demand.some(z =>
+        Math.abs(ltp - z.price) < ltp * ZONE_TOLERANCE
+      );
+      const inSupplyZone = strategyState.zones.supply.some(z =>
+        Math.abs(ltp - z.price) < ltp * ZONE_TOLERANCE
+      );
+
+      // 3. Prepare Analysis Object for SignalPanel
+      // Lookup Context
+      let marketContext = { vix: 0, sectorTrend: 'FLAT' };
+
+      if (window.sectorMap && window.vixMap) {
+        // Simple lookup - find closest minute
+        // Since keys are timestamps, we can just look for the exact minute or closest previous
+        // For simplicity, we assume 1-min alignment or just check existence
+        // Better: Round timestamp to nearest minute
+        const roundedTs = Math.floor(timestamp / 60000) * 60000;
+
+        // Try to find data within 1 minute
+        const sectorRow = window.sectorMap.get(roundedTs) || window.sectorMap.get(roundedTs - 60000);
+        const vixRow = window.vixMap.get(roundedTs) || window.vixMap.get(roundedTs - 60000);
+
+        if (vixRow) {
+          marketContext.vix = vixRow.close || vixRow.ltp || 0;
+        }
+
+        if (sectorRow) {
+          const sectorLtp = sectorRow.close || sectorRow.ltp || 0;
+          const sectorOpen = sectorRow.open || 0;
+          // Simple Trend: Close > Open = Bullish
+          marketContext.sectorTrend = sectorLtp > sectorOpen ? 'BULLISH' : 'BEARISH';
+        }
+      }
+
+      const analysis = {
+        vwap: strategyState.vwap,
+        rvol: tape.velocityNum > 50 ? 2.0 : 1.0, // Proxy for RVOL based on trade count
+        pcrTrend: 0, // Placeholder as Option Chain not loaded in Viewer
+        zones: strategyState.zones,
+        market: marketContext // Pass Context
+      };
+
+      // 4. Generate Signal
+      const signal = signalPanel.generateSignal({ ltp, timeStr: snapshot.time }, analysis);
+
+      // 5. Update UI
+      updateStrategyDisplay(signal, tape, inDemandZone, inSupplyZone, snapshot);
+    }
+
+    function analyzeTapeForStrategy(trades, bestBid, bestAsk) {
+      if (trades.length === 0) {
+        return {
+          velocity: 'LOW',
+          velocityNum: 0,
+          buyPressure: 0.5,
+          sellPressure: 0.5,
+          isHighVelocity: false,
+          aggressorSide: 'NEUTRAL',
+          tapeColor: 'MIXED'
+        };
+      }
+
+      // Calculate velocity (simplified - use trade count)
+      const velocityNum = trades.length; // Simplified
+      let velocity = 'LOW';
+      if (velocityNum > PANIC_VELOCITY * 2) velocity = 'EXTREME';
+      else if (velocityNum > PANIC_VELOCITY) velocity = 'HIGH';
+      else if (velocityNum > PANIC_VELOCITY / 2) velocity = 'NORMAL';
+
+      // Calculate buy/sell pressure
+      let redVolume = 0, greenVolume = 0;
+      trades.forEach(t => {
+        const qty = t.quantity || t.qty || 0;
+        if (t.price <= bestBid) {
+          redVolume += qty;
+        } else if (t.price >= bestAsk) {
+          greenVolume += qty;
+        } else {
+          const midpoint = (bestBid + bestAsk) / 2;
+          if (t.price < midpoint) redVolume += qty;
+          else greenVolume += qty;
+        }
+      });
+
+      const totalVolume = redVolume + greenVolume;
+      const buyPressure = totalVolume > 0 ? greenVolume / totalVolume : 0.5;
+      const sellPressure = totalVolume > 0 ? redVolume / totalVolume : 0.5;
+
+      // Lower threshold for aggressor detection (0.55 instead of 0.6)
+      let aggressorSide = 'NEUTRAL';
+      if (buyPressure > 0.55) aggressorSide = 'BUYERS';
+      else if (sellPressure > 0.55) aggressorSide = 'SELLERS';
+
+      return {
+        velocity,
+        velocityNum,
+        buyPressure,
+        sellPressure,
+        isHighVelocity: velocity === 'HIGH' || velocity === 'EXTREME',
+        aggressorSide,
+        tapeColor: buyPressure > 0.7 ? 'GREEN' : sellPressure > 0.7 ? 'RED' : 'MIXED'
+      };
+    }
+
+    function isBookGappyForStrategy(marketDepth) {
+      const bids = normalizeDepth(marketDepth?.bids);
+      const asks = normalizeDepth(marketDepth?.asks);
+
+      if (bids.length < 2 || asks.length < 2) return false;
+
+      // Check bid gaps
+      for (let i = 0; i < bids.length - 1; i++) {
+        const gap = bids[i].price - bids[i + 1].price;
+        const avgGap = bids[0].price * 0.0005;
+        if (gap > avgGap * 3) return true;
+      }
+
+      // Check ask gaps
+      for (let i = 0; i < asks.length - 1; i++) {
+        const gap = asks[i + 1].price - asks[i].price;
+        const avgGap = asks[0].price * 0.0005;
+        if (gap > avgGap * 3) return true;
+      }
+
+      return false;
+    }
+
+
+
+    function updateStrategyDisplay(signal, tape, inDemandZone, inSupplyZone, snapshot) {
+      const container = document.getElementById('strategySignals');
+      if (!container) return;
+
+      let html = '';
+
+      // Main Signal Box
+      const color = signal.type === 'BUY' ? '#00c853' : signal.type === 'SELL' ? '#ff4444' : '#888';
+
+      html += `
+        <div style="background: #1a1a2e; border: 1px solid ${color}; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div style="font-size: 24px;">${signal.icon}</div>
+                <div style="font-size: 18px; font-weight: bold; color: ${color};">${signal.title}</div>
+                <div style="font-size: 14px; color: #aaa;">${snapshot.time}</div>
+            </div>
+            
+            <div style="font-size: 12px; color: #ccc; margin-bottom: 10px;">
+                ${signal.reason}
+            </div>
+
+            ${signal.suggestedOption ? `
+            <div style="background: rgba(255, 255, 255, 0.1); padding: 8px; border-radius: 4px; text-align: center; margin-top: 10px; border: 1px dashed ${color};">
+                <div style="font-size: 10px; color: #aaa;">RECOMMENDED OPTION</div>
+                <div style="font-size: 16px; font-weight: bold; color: #fff;">${signal.suggestedOption}</div>
+                <div style="font-size: 10px; color: ${color};">ATM Strike</div>
+            </div>
+            ` : ''}
+        </div>
+      `;
+
+      // Edge Factors
+      if (signal.edgeFactors.length > 0) {
+        html += `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">`;
+        signal.edgeFactors.forEach(factor => {
+          const factorColor = factor.weight > 0 ? '#00c853' : '#ff4444';
+          html += `
+                <div style="background: #111; padding: 8px; border-radius: 4px; border-left: 3px solid ${factorColor}; font-size: 11px; color: #ddd;">
+                    ${factor.icon} ${factor.text}
+                </div>
+              `;
+        });
+        html += `</div>`;
+      }
+
+      container.innerHTML = html;
+    }
+
     // Build OHLC candles from snapshot trade data
     function buildCandles() {
       candles = [];
-      
+
       for (let i = 0; i < data.length; i += candleInterval) {
         const chunk = data.slice(i, i + candleInterval);
         const allPrices = [];
         let totalVol = 0;
-        
+
         // Collect all trade prices from this chunk
         chunk.forEach(snapshot => {
-          const trades = snapshot.recentTrades || [];
+          const trades = normalizeTrades(snapshot.recentTrades);
           trades.forEach(t => {
             if (t.price) {
               allPrices.push(t.price);
-              totalVol += t.quantity || t.qty || 0;
+              totalVol += t.qty || 0;
             }
           });
-          
+
           // Also use best bid/ask as price reference if no trades
           if (allPrices.length === 0) {
-            const bestBid = snapshot.marketDepth?.bids?.[0]?.price;
-            const bestAsk = snapshot.marketDepth?.asks?.[0]?.price;
+            const bids = normalizeDepth(snapshot.marketDepth?.bids);
+            const asks = normalizeDepth(snapshot.marketDepth?.asks);
+            const bestBid = bids[0]?.price;
+            const bestAsk = asks[0]?.price;
             if (bestBid) allPrices.push(bestBid);
             if (bestAsk) allPrices.push(bestAsk);
           }
         });
-        
+
         if (allPrices.length > 0) {
+          const firstSnapshot = chunk[0];
           candles.push({
             open: allPrices[0],
             high: Math.max(...allPrices),
@@ -576,85 +1554,119 @@
             volume: totalVol,
             startIndex: i,
             endIndex: Math.min(i + candleInterval - 1, data.length - 1),
-            timestamp: chunk[0]?.timestamp || ''
+            timestamp: firstSnapshot?.timestamp || '',
+            time: getTimestampDisplay(firstSnapshot)
           });
         }
       }
     }
 
+    // Helper to get timestamp display (supports both old and new format)
+    function getTimestampDisplay(snapshot) {
+      if (snapshot.time) return snapshot.time;  // New format: "14:32:15.123"
+      if (snapshot.timestamp && typeof snapshot.timestamp === 'number') {
+        // Unix timestamp - convert to readable
+        const date = new Date(snapshot.timestamp);
+        return date.toLocaleTimeString('en-IN', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }) +
+          '.' + String(date.getMilliseconds()).padStart(3, '0');
+      }
+      return snapshot.timestamp || '--';  // Old format or fallback
+    }
+
     function renderSnapshot(index) {
       const snapshot = data[index];
       if (!snapshot) return;
-      
-      document.getElementById('currentTime').textContent = snapshot.timestamp;
+
+      document.getElementById('currentTime').textContent = getTimestampDisplay(snapshot);
       document.getElementById('slider').value = index;
-      
-      // Bids - support both 'qty' and 'quantity' field names
+
+      // Normalize Data
+      const bids = normalizeDepth(snapshot.marketDepth?.bids);
+      const asks = normalizeDepth(snapshot.marketDepth?.asks);
+      const trades = normalizeTrades(snapshot.recentTrades);
+
+      // Bids
       const bidsBody = document.getElementById('bidsBody');
-      const maxBidQty = Math.max(...(snapshot.marketDepth?.bids || []).map(b => b.qty || b.quantity || 0), 1);
-      bidsBody.innerHTML = (snapshot.marketDepth?.bids || []).map(b => {
-        const qty = b.qty || b.quantity || 0;
+      const maxBidQty = Math.max(...bids.map(b => b.qty), 1);
+      bidsBody.innerHTML = bids.map(b => {
         return `
         <tr>
           <td class="price bid-price">${b.price?.toFixed(2)}</td>
           <td class="qty">
-            ${qty.toLocaleString()}
-            <div class="bar bid" style="width: ${(qty / maxBidQty) * 100}%"></div>
+            ${b.qty.toLocaleString()}
+            <div class="bar bid" style="width: ${(b.qty / maxBidQty) * 100}%"></div>
           </td>
         </tr>
       `}).join('');
-      
-      // Asks - support both 'qty' and 'quantity' field names
+
+      // Asks
       const asksBody = document.getElementById('asksBody');
-      const maxAskQty = Math.max(...(snapshot.marketDepth?.asks || []).map(a => a.qty || a.quantity || 0), 1);
-      asksBody.innerHTML = (snapshot.marketDepth?.asks || []).map(a => {
-        const qty = a.qty || a.quantity || 0;
+      const maxAskQty = Math.max(...asks.map(a => a.qty), 1);
+      asksBody.innerHTML = asks.map(a => {
         return `
         <tr>
           <td class="price ask-price">${a.price?.toFixed(2)}</td>
           <td class="qty">
-            ${qty.toLocaleString()}
-            <div class="bar ask" style="width: ${(qty / maxAskQty) * 100}%"></div>
+            ${a.qty.toLocaleString()}
+            <div class="bar ask" style="width: ${(a.qty / maxAskQty) * 100}%"></div>
           </td>
         </tr>
       `}).join('');
-      
+
       // Trades
       const tradesBody = document.getElementById('tradesBody');
-      const bestBid = snapshot.marketDepth?.bids?.[0]?.price || 0;
-      tradesBody.innerHTML = (snapshot.recentTrades || []).slice(0, 15).map(t => `
+      const bestBid = bids[0]?.price || 0;
+      tradesBody.innerHTML = trades.slice(0, 15).map(t => {
+        return `
         <div class="trade-row">
-          <span class="time">${t.time}</span>
-          <span class="qty">${t.quantity?.toLocaleString()}</span>
+          <span class="time">${t.timeStr}</span>
+          <span class="qty">${t.qty.toLocaleString()}</span>
           <span class="price ${t.price <= bestBid ? 'sell' : 'buy'}">${t.price?.toFixed(2)}</span>
         </div>
-      `).join('') || '<div class="empty-state">No trades</div>';
-      
+      `;
+      }).join('') || '<div class="empty-state">No trades</div>';
+
       // Pressure Bar
       renderPressureBar(snapshot);
-      
+
       // Candlestick Chart
       renderCandlestickChart(index);
+
+      // Strategy Analysis (Real-time update)
+      analyzeStrategyAtSnapshot(index);
+
+      // Process simulator if running (forward only, batched)
+      if (simulator.isRunning && index > simulator.lastProcessedIndex) {
+        try {
+          processSimulatorUpToIndex(index);
+          // Only update display every 10 snapshots to avoid lag
+          if (index % 10 === 0 || index === data.length - 1) {
+            updateSimulatorDisplay();
+          }
+        } catch (e) {
+          console.error("Simulator Error:", e);
+        }
+      }
     }
-    
+
     function renderCandlestickChart(currentSnapshotIndex) {
       const canvas = document.getElementById('chartCanvas');
       const ctx = canvas.getContext('2d');
-      
+
       // Set canvas size
       canvas.width = canvas.parentElement.offsetWidth;
       canvas.height = canvas.parentElement.offsetHeight;
-      
+
       const width = canvas.width;
       const height = canvas.height;
       const padding = { top: 10, right: 70, bottom: 20, left: 10 };
       const chartWidth = width - padding.left - padding.right;
       const chartHeight = height - padding.top - padding.bottom;
-      
+
       // Clear canvas
       ctx.fillStyle = '#0f0f0f';
       ctx.fillRect(0, 0, width, height);
-      
+
       if (candles.length === 0) {
         ctx.fillStyle = '#666';
         ctx.font = '14px Segoe UI';
@@ -662,41 +1674,41 @@
         ctx.fillText('No candle data available', width / 2, height / 2);
         return;
       }
-      
+
       // Show last N candles that fit
       const candleWidth = Math.max(6, Math.min(20, chartWidth / 50));
       const candleGap = 2;
       const maxCandles = Math.floor(chartWidth / (candleWidth + candleGap));
-      
+
       // Find which candle contains current snapshot
-      let currentCandleIdx = candles.findIndex(c => 
+      let currentCandleIdx = candles.findIndex(c =>
         currentSnapshotIndex >= c.startIndex && currentSnapshotIndex <= c.endIndex
       );
       if (currentCandleIdx === -1) currentCandleIdx = candles.length - 1;
-      
+
       // Show candles up to current position
       const startIdx = Math.max(0, currentCandleIdx - maxCandles + 1);
       const visibleCandles = candles.slice(startIdx, currentCandleIdx + 1);
-      
+
       if (visibleCandles.length === 0) return;
-      
+
       // Find price range
       let minPrice = Infinity, maxPrice = -Infinity;
       visibleCandles.forEach(c => {
         minPrice = Math.min(minPrice, c.low);
         maxPrice = Math.max(maxPrice, c.high);
       });
-      
+
       // Add some padding to price range
       const priceRange = maxPrice - minPrice || 1;
       minPrice -= priceRange * 0.05;
       maxPrice += priceRange * 0.05;
-      
+
       // Price to Y coordinate
       const priceToY = (price) => {
         return padding.top + chartHeight - ((price - minPrice) / (maxPrice - minPrice)) * chartHeight;
       };
-      
+
       // Draw grid lines
       ctx.strokeStyle = '#222';
       ctx.lineWidth = 1;
@@ -707,7 +1719,7 @@
         ctx.moveTo(padding.left, y);
         ctx.lineTo(width - padding.right, y);
         ctx.stroke();
-        
+
         // Price labels
         const price = maxPrice - ((maxPrice - minPrice) / gridLines) * i;
         ctx.fillStyle = '#666';
@@ -715,24 +1727,24 @@
         ctx.textAlign = 'left';
         ctx.fillText(price.toFixed(2), width - padding.right + 5, y + 3);
       }
-      
+
       // Find support/resistance levels from current snapshot's market depth
       const currentSnapshot = data[currentSnapshotIndex];
       const supportResistanceLevels = findSupportResistance(currentSnapshot, minPrice, maxPrice);
-      
+
       // Draw support/resistance zones FIRST (behind candles)
       let labelYPositions = []; // Track label positions to avoid overlap
-      
+
       supportResistanceLevels.forEach((level, idx) => {
         if (level.price >= minPrice && level.price <= maxPrice) {
           const y = priceToY(level.price);
-          
+
           // Draw zone background
-          ctx.fillStyle = level.type === 'support' 
-            ? 'rgba(76, 175, 80, 0.1)' 
+          ctx.fillStyle = level.type === 'support'
+            ? 'rgba(76, 175, 80, 0.1)'
             : 'rgba(255, 82, 82, 0.1)';
           ctx.fillRect(padding.left, y - 4, chartWidth, 8);
-          
+
           // Draw line
           ctx.strokeStyle = level.type === 'support' ? '#4caf50' : '#ff5252';
           ctx.lineWidth = 1.5;
@@ -742,7 +1754,7 @@
           ctx.lineTo(width - padding.right, y);
           ctx.stroke();
           ctx.setLineDash([]);
-          
+
           // Calculate label Y position (avoid overlap)
           let labelY = y - 12;
           // If this label would overlap with a previous one, move it
@@ -752,112 +1764,111 @@
             }
           });
           labelYPositions.push(labelY);
-          
+
           // Label with background for readability
-          const label = level.type === 'support' 
-            ? `▲ S: ${level.price.toFixed(2)} (${level.strength.toLocaleString()})` 
+          const label = level.type === 'support'
+            ? `▲ S: ${level.price.toFixed(2)} (${level.strength.toLocaleString()})`
             : `▼ R: ${level.price.toFixed(2)} (${level.strength.toLocaleString()})`;
-          
+
           ctx.font = 'bold 10px Segoe UI';
           const textWidth = ctx.measureText(label).width;
-          
+
           // Background
           ctx.fillStyle = 'rgba(15, 15, 15, 0.85)';
           ctx.fillRect(padding.left + 3, labelY - 10, textWidth + 8, 14);
-          
+
           // Text
           ctx.fillStyle = level.type === 'support' ? '#4caf50' : '#ff5252';
           ctx.textAlign = 'left';
           ctx.fillText(label, padding.left + 7, labelY);
         }
       });
-      
-      // Draw candles
-      visibleCandles.forEach((candle, i) => {
-        const x = padding.left + i * (candleWidth + candleGap) + candleWidth / 2;
-        const isGreen = candle.close >= candle.open;
-        const isCurrentCandle = (startIdx + i) === currentCandleIdx;
-        
+
+      // Draw Candles
+      visibleCandles.forEach(c => {
+        // Calculate X position
+        const candleIndex = visibleCandles.indexOf(c);
+        const xPos = padding.left + candleIndex * (candleWidth + candleGap) + candleWidth / 2;
+
+        const openY = priceToY(c.open);
+        const closeY = priceToY(c.close);
+        const highY = priceToY(c.high);
+        const lowY = priceToY(c.low);
+
+        const isGreen = c.close >= c.open;
+        ctx.strokeStyle = isGreen ? '#00c853' : '#ff4444';
+        ctx.fillStyle = isGreen ? '#00c853' : '#ff4444';
+
         // Wick
-        ctx.strokeStyle = isGreen ? '#4caf50' : '#ff5252';
-        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(x, priceToY(candle.high));
-        ctx.lineTo(x, priceToY(candle.low));
+        ctx.moveTo(xPos, highY);
+        ctx.lineTo(xPos, lowY);
         ctx.stroke();
-        
-        // Body - SOLID for both green and red
-        const bodyTop = priceToY(Math.max(candle.open, candle.close));
-        const bodyBottom = priceToY(Math.min(candle.open, candle.close));
-        const bodyHeight = Math.max(1, bodyBottom - bodyTop);
-        
-        ctx.fillStyle = isGreen ? '#4caf50' : '#ff5252';
-        ctx.fillRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
-        
-        // Highlight current candle
-        if (isCurrentCandle) {
-          ctx.strokeStyle = '#ffd700';
-          ctx.lineWidth = 2;
-          ctx.strokeRect(x - candleWidth / 2 - 2, bodyTop - 2, candleWidth + 4, bodyHeight + 4);
+
+        // Body
+        const bodyHeight = Math.max(1, Math.abs(closeY - openY));
+        const bodyY = Math.min(openY, closeY);
+        ctx.fillRect(xPos - candleWidth / 2, bodyY, candleWidth, bodyHeight);
+
+        // --- DRAW SIGNALS ON CHART ---
+        // Find signals within this candle's time range
+        const candleSignals = data.slice(c.startIndex, c.endIndex + 1)
+          .flatMap(s => s.signals || [])
+          .filter(s => s.type && s.type.includes('ENTRY'));
+
+        if (candleSignals.length > 0) {
+          const uniqueSignals = [...new Set(candleSignals.map(s => s.type))];
+          uniqueSignals.forEach((sigType, i) => {
+            const isBuy = sigType.includes('BUY');
+            const yOffset = isBuy ? 20 + (i * 12) : -20 - (i * 12);
+            const yPos = isBuy ? lowY + yOffset : highY + yOffset;
+
+            ctx.fillStyle = isBuy ? '#00ff88' : '#ff0055';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(isBuy ? '▲' : '▼', xPos, yPos);
+          });
         }
       });
-      
-      // Current price line
+
+      // Update Chart Info Header
       const currentCandle = visibleCandles[visibleCandles.length - 1];
       if (currentCandle) {
-        const currentY = priceToY(currentCandle.close);
-        
-        ctx.strokeStyle = '#ffd700';
-        ctx.setLineDash([4, 4]);
-        ctx.beginPath();
-        ctx.moveTo(padding.left, currentY);
-        ctx.lineTo(width - padding.right, currentY);
-        ctx.stroke();
-        ctx.setLineDash([]);
-        
-        // Price tag
-        ctx.fillStyle = '#ffd700';
-        ctx.fillRect(width - padding.right, currentY - 8, 60, 16);
-        ctx.fillStyle = '#000';
-        ctx.font = 'bold 10px monospace';
-        ctx.textAlign = 'left';
-        ctx.fillText(currentCandle.close.toFixed(2), width - padding.right + 3, currentY + 3);
-        
-        // Update OHLC display
-        const isUp = currentCandle.close >= currentCandle.open;
         document.getElementById('chartOpen').textContent = currentCandle.open.toFixed(2);
         document.getElementById('chartHigh').textContent = currentCandle.high.toFixed(2);
         document.getElementById('chartLow').textContent = currentCandle.low.toFixed(2);
         document.getElementById('chartClose').textContent = currentCandle.close.toFixed(2);
-        document.getElementById('chartClose').className = isUp ? 'green' : 'red';
         document.getElementById('chartVol').textContent = currentCandle.volume.toLocaleString();
+
+        const closeEl = document.getElementById('chartClose');
+        closeEl.className = currentCandle.close >= currentCandle.open ? 'green' : 'red';
       }
     }
-    
+
     // Find support/resistance levels using same logic as content.js
     // Wall = quantity > 2.5x average quantity (WALL_MULTIPLIER)
     function findSupportResistance(snapshot, minPrice, maxPrice) {
       const levels = [];
       if (!snapshot?.marketDepth) return levels;
-      
-      const bids = snapshot.marketDepth.bids || [];
-      const asks = snapshot.marketDepth.asks || [];
-      
+
+      const bids = normalizeDepth(snapshot.marketDepth.bids);
+      const asks = normalizeDepth(snapshot.marketDepth.asks);
+
       // Calculate average quantity (same as content.js adaptive logic)
       const allQuantities = [
-        ...bids.map(b => b.qty || b.quantity || 0),
-        ...asks.map(a => a.qty || a.quantity || 0)
+        ...bids.map(b => b.qty),
+        ...asks.map(a => a.qty)
       ].filter(q => q > 0);
-      
+
       if (allQuantities.length === 0) return levels;
-      
+
       const avgQty = allQuantities.reduce((a, b) => a + b, 0) / allQuantities.length;
       const WALL_MULTIPLIER = 2.5; // Same as content.js
       const wallThreshold = avgQty * WALL_MULTIPLIER;
-      
+
       // Find support walls (bids with qty > threshold)
       bids.forEach(bid => {
-        const qty = bid.qty || bid.quantity || 0;
+        const qty = bid.qty || 0;
         if (qty > wallThreshold && bid.price >= minPrice && bid.price <= maxPrice) {
           levels.push({
             type: 'support',
@@ -867,10 +1878,10 @@
           });
         }
       });
-      
+
       // Find resistance walls (asks with qty > threshold)
       asks.forEach(ask => {
-        const qty = ask.qty || ask.quantity || 0;
+        const qty = ask.qty || 0;
         if (qty > wallThreshold && ask.price >= minPrice && ask.price <= maxPrice) {
           levels.push({
             type: 'resistance',
@@ -880,82 +1891,78 @@
           });
         }
       });
-      
+
       // Sort by strength (strongest first) and filter out levels too close together
       levels.sort((a, b) => b.strength - a.strength);
-      
+
       // Keep only the strongest level if multiple are within 0.1% of each other
       const filteredLevels = [];
       const minPriceGap = (maxPrice - minPrice) * 0.03; // 3% of visible range
-      
+
       levels.forEach(level => {
-        const tooClose = filteredLevels.some(existing => 
+        const tooClose = filteredLevels.some(existing =>
           Math.abs(existing.price - level.price) < minPriceGap
         );
         if (!tooClose) {
           filteredLevels.push(level);
         }
       });
-      
+
       // Return max 3 levels (strongest ones)
       return filteredLevels.slice(0, 3);
     }
-    
+
     // Resize handler for chart
     window.addEventListener('resize', () => {
       if (data.length > 0) {
         renderCandlestickChart(currentIndex);
       }
     });
-    
+
     function renderPressureBar(snapshot) {
-      const trades = snapshot.recentTrades || [];
-      const bestBid = snapshot.marketDepth?.bids?.[0]?.price || 0;
-      const bestAsk = snapshot.marketDepth?.asks?.[0]?.price || 0;
-      
+      const trades = normalizeTrades(snapshot.recentTrades);
+      const bids = normalizeDepth(snapshot.marketDepth?.bids);
+      const asks = normalizeDepth(snapshot.marketDepth?.asks);
+
+      const bestBid = bids[0]?.price || 0;
+      const bestAsk = asks[0]?.price || 0;
+
       let buyVolume = 0;
       let sellVolume = 0;
-      
+
       // Calculate buy/sell pressure from trades
-      // Trades at or below best bid = aggressive sellers hitting bids
-      // Trades at or above best ask = aggressive buyers lifting offers
-      // Support both 'quantity' and 'qty' field names
       trades.forEach(t => {
-        const qty = t.quantity || t.qty || 0;
+        const qty = t.qty || 0;
         if (t.price <= bestBid) {
           sellVolume += qty;
         } else if (t.price >= bestAsk) {
           buyVolume += qty;
         } else {
-          // Mid-price trades: split 50/50 or use price proximity
-          const midPrice = (bestBid + bestAsk) / 2;
-          if (t.price >= midPrice) {
-            buyVolume += qty;
-          } else {
-            sellVolume += qty;
-          }
+          const midpoint = (bestBid + bestAsk) / 2;
+          if (t.price < midpoint) sellVolume += qty;
+          else buyVolume += qty;
         }
       });
-      
+
       const totalVolume = buyVolume + sellVolume;
-      
+
       // Calculate percentages
       let buyPercent = 50;
       let sellPercent = 50;
-      
+
       if (totalVolume > 0) {
         buyPercent = (buyVolume / totalVolume) * 100;
         sellPercent = (sellVolume / totalVolume) * 100;
       }
-      
+
       // Update bars
       document.getElementById('buyPressureBar').style.width = buyPercent + '%';
       document.getElementById('sellPressureBar').style.width = sellPercent + '%';
-      
+
       // Update volume labels
       document.getElementById('buyVolume').textContent = `Buy: ${buyVolume.toLocaleString()}`;
       document.getElementById('sellVolume').textContent = `Sell: ${sellVolume.toLocaleString()}`;
-      
+
       // Calculate and display ratio
       let ratioText = '1:1';
       if (buyVolume > 0 && sellVolume > 0) {
@@ -972,11 +1979,11 @@
         ratioText = '∞:1 SELL';
       }
       document.getElementById('pressureRatio').textContent = ratioText;
-      
+
       // Update pressure indicator
       const indicator = document.getElementById('pressureIndicator');
       const imbalance = buyPercent - sellPercent;
-      
+
       if (imbalance > 20) {
         indicator.textContent = '🚀 STRONG BUYING';
         indicator.className = 'pressure-indicator bullish';
@@ -1001,7 +2008,7 @@
         signalsBody.innerHTML = '<div class="empty-state">No signals detected</div>';
         return;
       }
-      
+
       signalsBody.innerHTML = signals.map(s => {
         let cls = '';
         if (s.type?.includes('BUY')) cls = 'buy';
@@ -1009,7 +2016,7 @@
         else if (s.type?.includes('SPOOF')) cls = 'spoof';
         else if (s.type?.includes('PANIC')) cls = 'panic';
         else if (s.type?.includes('MELT')) cls = 'melt';
-        
+
         return `
           <div class="signal-row ${cls}">
             <div class="type">${s.type || 'SIGNAL'}</div>
@@ -1023,11 +2030,707 @@
       }).join('');
     }
 
+    // ═══════════════════════════════════════════════════════════════════════════════
+    //  TRADE SIMULATOR
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    let simulator = {
+      isRunning: false,
+      position: 'FLAT',  // FLAT, LONG only (no SHORT - too fast to execute)
+      entryPrice: 0,
+      entryIndex: -1,
+      quantity: 1,  // Fixed quantity for simulation
+      stopLossPercent: 0.3,  // Tight stop loss for quick exits
+      takeProfitPercent: 1.0,  // IMPROVED: Wider take profit for better R:R (was 0.5%)
+      trades: [],
+      totalPnL: 0,
+      currentPnL: 0,
+      autoTrade: true,
+      brokeragePercent: 0.03,  // 0.03% per trade (0.06% round trip)
+      minHoldSnapshots: 20,  // IMPROVED: Longer minimum hold (was 10)
+      lastExitIndex: -1,  // Track last exit to avoid immediate re-entry
+      lastProcessedIndex: -1,  // Track last processed snapshot
+      sectorFilter: true // Filter trades by sector sentiment
+    };
+
+    function initTradeSimulator() {
+      // Start/Stop button
+      document.getElementById('btnStartSim').addEventListener('click', () => {
+        if (!simulator.isRunning) {
+          startSimulator();
+        } else {
+          stopSimulator();
+        }
+      });
+
+      // Reset button
+      document.getElementById('btnResetSim').addEventListener('click', () => {
+        resetSimulator();
+      });
+
+      // Auto trade checkbox
+      document.getElementById('chkAutoTrade').addEventListener('change', (e) => {
+        simulator.autoTrade = e.target.checked;
+      });
+
+      // Sector filter checkbox
+      document.getElementById('chkSectorFilter').addEventListener('change', (e) => {
+        simulator.sectorFilter = e.target.checked;
+      });
+
+      // Stop loss input
+      document.getElementById('inputStopLoss').addEventListener('change', (e) => {
+        simulator.stopLossPercent = parseFloat(e.target.value);
+      });
+
+      // Take profit input
+      document.getElementById('inputTakeProfit').addEventListener('change', (e) => {
+        simulator.takeProfitPercent = parseFloat(e.target.value);
+      });
+
+      // Note: Simulator processing is handled in renderSnapshot() when slider changes
+    }
+
+    function startSimulator() {
+      if (data.length === 0) {
+        alert('Please load data first');
+        return;
+      }
+
+      simulator.isRunning = true;
+      simulator.lastProcessedIndex = -1;
+      document.getElementById('btnStartSim').textContent = '⏸ Stop Simulator';
+      document.getElementById('btnStartSim').style.background = '#ffc107';
+      document.getElementById('btnStartSim').style.color = '#000';
+
+      // Process in batches to avoid blocking
+      processSimulatorBatch(0, currentIndex, () => {
+        updateSimulatorDisplay();
+      });
+    }
+
+    function processSimulatorBatch(startIdx, endIdx, callback) {
+      const BATCH_SIZE = 500; // Process 500 at a time
+      const batchEnd = Math.min(startIdx + BATCH_SIZE, endIdx + 1);
+
+      try {
+        for (let i = startIdx; i < batchEnd && i < data.length; i++) {
+          processSimulatorAtSnapshot(i);
+          simulator.lastProcessedIndex = i;
+        }
+      } catch (e) {
+        console.error('[Simulator] Error:', e);
+      }
+
+      // Update display periodically
+      if (startIdx % 1000 === 0) {
+        updateSimulatorDisplay();
+      }
+
+      // Continue with next batch or finish
+      if (batchEnd <= endIdx && simulator.isRunning) {
+        setTimeout(() => processSimulatorBatch(batchEnd, endIdx, callback), 0);
+      } else if (callback) {
+        callback();
+      }
+    }
+
+    function processSimulatorUpToIndex(targetIndex) {
+      if (!simulator.isRunning) return;
+
+      try {
+        // If moving backward, just update current P&L display (don't reprocess everything)
+        if (targetIndex < simulator.lastProcessedIndex) {
+          // For backward movement, we skip reprocessing - just update display
+          return;
+        }
+
+        // Process only new snapshots (forward movement)
+        const startIndex = Math.max(0, simulator.lastProcessedIndex + 1);
+        const BATCH_LIMIT = 100; // Limit per frame to avoid lag
+        const endIndex = Math.min(targetIndex, startIndex + BATCH_LIMIT);
+
+        for (let i = startIndex; i <= endIndex && i < data.length; i++) {
+          processSimulatorAtSnapshot(i);
+          simulator.lastProcessedIndex = i;
+        }
+
+        // If more to process, continue
+        if (endIndex < targetIndex) {
+          simulator.lastProcessedIndex = endIndex;
+        }
+      } catch (e) {
+        console.error('[Simulator] Error:', e);
+      }
+    }
+
+    function stopSimulator() {
+      simulator.isRunning = false;
+      document.getElementById('btnStartSim').textContent = '▶ Start Simulator';
+      document.getElementById('btnStartSim').style.background = '#00c853';
+      document.getElementById('btnStartSim').style.color = '#fff';
+    }
+
+    function resetSimulator() {
+      stopSimulator();
+      simulator = {
+        isRunning: false,
+        position: 'FLAT',
+        entryPrice: 0,
+        entryIndex: -1,
+        quantity: 1,
+        stopLossPercent: parseFloat(document.getElementById('inputStopLoss').value) || 0.3,
+        takeProfitPercent: parseFloat(document.getElementById('inputTakeProfit').value) || 0.5,
+        trades: [],
+        totalPnL: 0,
+        currentPnL: 0,
+        autoTrade: document.getElementById('chkAutoTrade').checked,
+        brokeragePercent: 0.03,
+        minHoldSnapshots: 10,  // Increased minimum hold
+        lastExitIndex: -1,
+        lastProcessedIndex: -1
+      };
+      updateSimulatorDisplay();
+    }
+
+    function processSimulatorAtSnapshot(index) {
+      try {
+        if (index < 0 || index >= data.length) return;
+
+        const snapshot = data[index];
+        if (!snapshot || !snapshot.marketDepth) return;
+
+        const bids = normalizeDepth(snapshot.marketDepth.bids);
+        const asks = normalizeDepth(snapshot.marketDepth.asks);
+
+        const bestBid = bids[0]?.price || 0;
+        const bestAsk = asks[0]?.price || 0;
+        const ltp = snapshot.ltp || (bestBid + bestAsk) / 2 || bestBid;
+
+        if (!ltp || ltp <= 0) return;
+
+        // Check exit conditions
+        if (simulator.position !== 'FLAT') {
+          checkExitConditions(index, ltp, bestBid, bestAsk);
+        }
+
+        // Check entry signals
+        if (simulator.position === 'FLAT' && simulator.autoTrade) {
+          checkEntrySignals(index, ltp, bestBid, bestAsk);
+        }
+
+        // Update current P&L
+        if (simulator.position !== 'FLAT') {
+          // LONG: profit when price rises (ltp - entryPrice)
+          // SHORT: profit when price falls (entryPrice - ltp)
+          const priceDiff = simulator.position === 'LONG'
+            ? (ltp - simulator.entryPrice)
+            : (simulator.entryPrice - ltp);
+          const grossPnL = priceDiff * simulator.quantity;
+          const estimatedBrokerage = (simulator.entryPrice + ltp) * simulator.quantity * (simulator.brokeragePercent / 100);
+          simulator.currentPnL = grossPnL - estimatedBrokerage;
+        } else {
+          simulator.currentPnL = 0;
+        }
+      } catch (e) { console.error("processSimulatorAtSnapshot Error:", e); }
+    }
+
+    function checkExitConditions(index, ltp, bestBid, bestAsk) {
+      if (simulator.position === 'FLAT') return;
+
+      try {
+        const entryPrice = simulator.entryPrice;
+        const entryIndex = simulator.entryIndex;
+        const holdDuration = index - entryIndex;
+
+        // Determine exit price based on position
+        // LONG: Sell at bid (realistic)
+        // SHORT: Cover at ask (realistic)
+        const exitPrice = simulator.position === 'LONG' ? (bestBid || ltp) : (bestAsk || ltp);
+
+        // Calculate P&L based on position
+        // LONG: profit when price rises
+        // SHORT: profit when price falls
+        const priceDiff = simulator.position === 'LONG'
+          ? (exitPrice - entryPrice)
+          : (entryPrice - exitPrice);
+        const currentPnLPercent = (priceDiff / entryPrice) * 100;
+
+        let shouldExit = false;
+        let exitReason = '';
+
+        // HARD STOP LOSS - Check FIRST, no exceptions
+        const stopLossPrice = simulator.position === 'LONG'
+          ? entryPrice * (1 - simulator.stopLossPercent / 100)
+          : entryPrice * (1 + simulator.stopLossPercent / 100);
+
+        const hitStopLoss = simulator.position === 'LONG'
+          ? (exitPrice <= stopLossPrice)
+          : (exitPrice >= stopLossPrice);
+
+        if (hitStopLoss) {
+          shouldExit = true;
+          exitReason = `Stop Loss`;
+          exitTrade(index, exitPrice, exitReason);
+          return; // Exit immediately
+        }
+
+        // MAXIMUM LOSS CAP - Never lose more than 0.5% (safety net)
+        if (currentPnLPercent <= -0.5) {
+          shouldExit = true;
+          exitReason = `Max Loss Cap`;
+          exitTrade(index, exitPrice, exitReason);
+          return;
+        }
+
+        // MAXIMUM HOLD TIME - Exit after 200 snapshots (prevent huge losses)
+        if (holdDuration > 200) {
+          shouldExit = true;
+          exitReason = `Max Hold Time`;
+          exitTrade(index, exitPrice, exitReason);
+          return;
+        }
+
+        // Take profit - ALWAYS check (hard rule)
+        const takeProfitPrice = simulator.position === 'LONG'
+          ? entryPrice * (1 + simulator.takeProfitPercent / 100)
+          : entryPrice * (1 - simulator.takeProfitPercent / 100);
+
+        const hitTakeProfit = simulator.position === 'LONG'
+          ? (exitPrice >= takeProfitPrice)
+          : (exitPrice <= takeProfitPrice);
+
+        if (hitTakeProfit) {
+          shouldExit = true;
+          exitReason = `Take Profit`;
+          exitTrade(index, exitPrice, exitReason);
+          return;
+        }
+
+        // Trailing stop - If we're in profit, protect it
+        // Once we're up 0.3%, don't let it go below 0.1% (protect profits)
+        if (currentPnLPercent > 0.3) {
+          const trailingStopPrice = simulator.position === 'LONG'
+            ? entryPrice * 1.001
+            : entryPrice * 0.999;
+
+          const hitTrailingStop = simulator.position === 'LONG'
+            ? (exitPrice < trailingStopPrice)
+            : (exitPrice > trailingStopPrice);
+
+          if (hitTrailingStop) {
+            shouldExit = true;
+            exitReason = 'Trailing Stop';
+            exitTrade(index, exitPrice, exitReason);
+            return;
+          }
+        }
+
+        // Only exit on tape signals if:
+        // 1. We've held for at least 10 snapshots
+        // 2. We're already in profit (after brokerage)
+        // 3. Strong counter-pressure is happening
+        if (holdDuration >= 10 && currentPnLPercent > 0.15 && !shouldExit) {
+          const snapshot = data[index];
+          const trades = normalizeTrades(snapshot.recentTrades);
+          const tape = analyzeTapeForStrategy(trades, bestBid, bestAsk);
+
+          // For LONG: Exit on very strong selling (85%+ sell pressure)
+          // For SHORT: Exit on very strong buying (85%+ buy pressure)
+          const shouldExitOnTape = simulator.position === 'LONG'
+            ? (tape.aggressorSide === 'SELLERS' && tape.sellPressure > 0.85 && tape.isHighVelocity)
+            : (tape.aggressorSide === 'BUYERS' && tape.buyPressure > 0.85 && tape.isHighVelocity);
+
+          if (shouldExitOnTape) {
+            shouldExit = true;
+            exitReason = simulator.position === 'LONG' ? 'Strong Selling' : 'Strong Buying';
+            exitTrade(index, exitPrice, exitReason);
+            return;
+          }
+        }
+      } catch (e) { console.error("checkExitConditions Error:", e); }
+    }
+
+    function checkEntrySignals(index, ltp, bestBid, bestAsk) {
+      try {
+        const snapshot = data[index];
+        if (!snapshot) return;
+
+        // SECTOR FILTER: Check if sector is supportive
+        const sectorScore = snapshot.analysis?.sector?.netScore || 0;
+        const sectorPanic = snapshot.analysis?.sector?.panicCount > 0;
+
+        if (simulator.sectorFilter) {
+          // If sector is in panic or deeply negative, DO NOT BUY
+          if (sectorPanic || sectorScore < -2) return;
+        }
+
+        // TREND FILTER: Calculate 50-snapshot SMA and only buy if price is above it
+        let trendBullish = false;
+        if (index >= 50) {
+          let priceSum = 0;
+          let count = 0;
+          for (let i = index; i >= Math.max(0, index - 50); i--) {
+            const snap = data[i];
+            const bid = snap.marketDepth?.bids?.[0]?.price || 0;
+            const ask = snap.marketDepth?.asks?.[0]?.price || 0;
+            if (bid > 0) {
+              priceSum += (bid + ask) / 2 || bid;
+              count++;
+            }
+          }
+          const sma50 = count > 0 ? priceSum / count : 0;
+          trendBullish = ltp > sma50; // Only buy if price is above 50-SMA
+
+          // Skip if trend is bearish
+          if (!trendBullish) return;
+        }
+
+        // STRICT COOLDOWN - Wait 100 snapshots after exit (IMPROVED from 30)
+        if (simulator.lastExitIndex >= 0 && (index - simulator.lastExitIndex) < 100) {
+          return;
+        }
+
+        // Skip if we've traded too much recently (max 1 trade per 100 snapshots)
+        if (simulator.trades.length > 0) {
+          const lastTrade = simulator.trades[simulator.trades.length - 1];
+          if (index - lastTrade.exitIndex < 100) {
+            return;
+          }
+        }
+
+        // VALIDATION: Check for price gaps (don't enter if price just jumped)
+        if (index > 0) {
+          const prevSnapshot = data[index - 1];
+          const prevBids = normalizeDepth(prevSnapshot.marketDepth?.bids);
+          const prevAsks = normalizeDepth(prevSnapshot.marketDepth?.asks);
+          const prevBid = prevBids[0]?.price || 0;
+          const prevAsk = prevAsks[0]?.price || 0;
+          const prevLtp = (prevBid + prevAsk) / 2 || prevBid;
+
+          // If price gap > 0.2%, skip (might be bad data or gap)
+          if (prevLtp > 0 && Math.abs(ltp - prevLtp) / prevLtp > 0.002) {
+            return; // Price gap detected, skip entry
+          }
+        }
+
+        // VALIDATION: Spread must be reasonable (not too wide)
+        const spread = bestAsk - bestBid;
+        const spreadPercent = (spread / ltp) * 100;
+        if (spreadPercent > 0.1) { // Spread > 0.1% = skip
+          return; // Spread too wide, skip
+        }
+
+        const trades = normalizeTrades(snapshot.recentTrades);
+        const tape = analyzeTapeForStrategy(trades, bestBid, bestAsk);
+
+        // VALIDATION: Don't enter during high volatility/panic
+        if (tape.isHighVelocity && tape.sellPressure > 0.6) {
+          return; // Too volatile, skip
+        }
+
+        // Check price context - need to be at a STRONG support level
+        const inDemandZone = strategyState.zones.demand.some(z =>
+          Math.abs(ltp - z.price) < ltp * 0.002  // Tighter tolerance - must be CLOSE to zone
+        );
+        const nearVWAP = strategyState.vwap > 0 &&
+          Math.abs(ltp - strategyState.vwap) < ltp * 0.001; // IMPROVED: Tighter VWAP tolerance (was 0.002)
+
+        // Check price trend - price should be stable or rising (not falling)
+        let priceRising = false;
+        let priceStable = false;
+        if (index >= 20) { // IMPROVED: Check 20 snapshots (was 10)
+          const recentPrices = [];
+          for (let i = index; i >= Math.max(0, index - 20); i--) {
+            const snap = data[i];
+            const bid = snap.marketDepth?.bids?.[0]?.price || 0;
+            const ask = snap.marketDepth?.asks?.[0]?.price || 0;
+            if (bid > 0) recentPrices.push((bid + ask) / 2 || bid);
+          }
+          if (recentPrices.length >= 10) {
+            const trend = recentPrices[0] - recentPrices[recentPrices.length - 1];
+            priceRising = trend >= 0; // Price stable or rising
+            // Check stability (low volatility)
+            const priceRange = Math.max(...recentPrices) - Math.min(...recentPrices);
+            priceStable = (priceRange / ltp) < 0.002; // Price range < 0.2%
+          }
+        }
+
+        // REQUIRE MULTIPLE CONFIRMATIONS - Only trade on HIGHEST quality setups
+
+        // RULE 1: VWAP + STRONG ZONE + STRONG BUYERS + PRICE STABLE/RISING
+        // Highest probability setup - requires ALL conditions
+        if (nearVWAP && inDemandZone && (priceRising || priceStable)) {
+          // Must have STRONG buying pressure (>80%) and clear buyers
+          if (tape.aggressorSide === 'BUYERS' && tape.buyPressure > 0.80 && !tape.isHighVelocity) {
+            // Check if there's a strong bid wall (support) - at least 2x average
+            const strongBidWall = snapshot.marketDepth?.bids?.some(b => {
+              const qty = b.qty || b.quantity || 0;
+              const avgQty = strategyState.zones.demand.length > 0
+                ? strategyState.zones.demand.reduce((sum, z) => sum + z.strength, 0) / strategyState.zones.demand.length
+                : 0;
+              return qty > avgQty * 2.5 && Math.abs(b.price - ltp) < ltp * 0.001;
+            });
+
+            // Also check that we're not entering at a high (check last 20 snapshots)
+            let notAtHigh = true;
+            if (index >= 20) {
+              const recentHighs = [];
+              for (let i = index; i >= Math.max(0, index - 20); i--) {
+                const snap = data[i];
+                const ask = snap.marketDepth?.asks?.[0]?.price || 0;
+                if (ask > 0) recentHighs.push(ask);
+              }
+              if (recentHighs.length > 0) {
+                const maxHigh = Math.max(...recentHighs);
+                notAtHigh = ltp < maxHigh * 0.998; // Not within 0.2% of recent high
+              }
+            }
+
+            if (strongBidWall && notAtHigh) {
+              enterTrade('LONG', index, bestAsk, 'PREMIUM_SETUP'); // Enter at ask (realistic)
+              return;
+            }
+          }
+        }
+
+        // RULE 2: STRONG ZONE + TAPE FLIP (panic subsiding, buyers stepping in)
+        // Only if price was falling but now buyers are appearing AND price is stable
+        if (inDemandZone && priceStable && index >= 5) {
+          // Check if previous snapshots showed selling, but now buyers
+          const prevSnapshot = data[index - 1];
+          const prevTrades = prevSnapshot.recentTrades || [];
+          const prevTape = analyzeTapeForStrategy(prevTrades,
+            prevSnapshot.marketDepth?.bids?.[0]?.price || bestBid,
+            prevSnapshot.marketDepth?.asks?.[0]?.price || bestAsk);
+
+          // Was selling, now buying (tape flip) with strong confirmation
+          if (prevTape.aggressorSide === 'SELLERS' &&
+            tape.aggressorSide === 'BUYERS' &&
+            tape.buyPressure > 0.75 &&
+            tape.buyPressure > prevTape.buyPressure + 0.15) { // Significant flip
+            // Check for bid wall support
+            const hasSupport = snapshot.marketDepth?.bids?.some(b => {
+              const qty = b.qty || b.quantity || 0;
+              return qty > 100 && Math.abs(b.price - ltp) < ltp * 0.001;
+            });
+
+            if (hasSupport) {
+              enterTrade('LONG', index, bestAsk, 'TAPE_FLIP'); // Enter at ask
+              return;
+            }
+          }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // SHORT ENTRY RULES (Simplified for bear markets)
+        // ═══════════════════════════════════════════════════════════════
+
+        // Only allow SHORT if trend is bearish (price < 50-SMA)
+        if (index >= 50 && !trendBullish) {
+          // Check price context - at resistance level
+          const inSupplyZone = strategyState.zones.supply.some(z =>
+            Math.abs(ltp - z.price) < ltp * 0.003  // Slightly looser tolerance for SHORT
+          );
+
+          // SHORT RULE 1: Strong Selling Pressure (simplified)
+          // Just need strong sellers, don't require perfect setup
+          if (tape.aggressorSide === 'SELLERS' && tape.sellPressure > 0.70) {
+            // Optional: prefer if at resistance, but not required
+            if (inSupplyZone || ltp > strategyState.vwap * 0.999) {
+              enterTrade('SHORT', index, bestBid, 'BEARISH_TAPE');
+              return;
+            }
+          }
+
+          // SHORT RULE 2: Tape Flip to Sellers (simplified)
+          if (index >= 5) {
+            const prevSnapshot = data[index - 1];
+            const prevTrades = prevSnapshot.recentTrades || [];
+            const prevTape = analyzeTapeForStrategy(prevTrades,
+              prevSnapshot.marketDepth?.bids?.[0]?.price || bestBid,
+              prevSnapshot.marketDepth?.asks?.[0]?.price || bestAsk);
+
+            // Was buying, now selling (tape flip)
+            if (prevTape.aggressorSide === 'BUYERS' &&
+              tape.aggressorSide === 'SELLERS' &&
+              tape.sellPressure > 0.65) {
+              enterTrade('SHORT', index, bestBid, 'TAPE_FLIP_SHORT');
+              return;
+            }
+          }
+        }
+
+        // NO OTHER ENTRIES - We only trade on these high-probability setups
+      } catch (e) { console.error("checkEntrySignals Error:", e); }
+    }
+
+    function enterTrade(direction, index, price, reason) {
+      if (simulator.position !== 'FLAT') return;
+      if (direction !== 'LONG' && direction !== 'SHORT') return; // Only LONG or SHORT
+
+      simulator.position = direction;
+      simulator.entryPrice = price;
+      simulator.entryIndex = index;
+      simulator.currentPnL = 0;
+    }
+
+    function exitTrade(index, price, reason) {
+      if (simulator.position === 'FLAT') return;
+
+      const entryPrice = simulator.entryPrice;
+      const entryIndex = simulator.entryIndex;
+
+      // Calculate gross P&L (before brokerage)
+      // LONG: profit when price rises (price - entryPrice)
+      // SHORT: profit when price falls (entryPrice - price)
+      const priceDiff = simulator.position === 'LONG'
+        ? (price - entryPrice)
+        : (entryPrice - price);
+      const grossPnL = priceDiff * simulator.quantity;
+
+      // Deduct brokerage (0.03% on entry + 0.03% on exit = 0.06% round trip)
+      const brokerageEntry = entryPrice * simulator.quantity * (simulator.brokeragePercent / 100);
+      const brokerageExit = price * simulator.quantity * (simulator.brokeragePercent / 100);
+      const totalBrokerage = brokerageEntry + brokerageExit;
+
+      // Net P&L (after brokerage)
+      const netPnL = grossPnL - totalBrokerage;
+      const netPnLPercent = (netPnL / (entryPrice * simulator.quantity)) * 100;
+
+      // Record trade
+      const entrySnapshot = data[entryIndex];
+      const exitSnapshot = data[index];
+
+      const trade = {
+        id: simulator.trades.length + 1,
+        direction: simulator.position,
+        entryPrice: entryPrice,
+        exitPrice: price,
+        entryTime: getTimestampDisplay(entrySnapshot),
+        exitTime: getTimestampDisplay(exitSnapshot),
+        entryIndex: entryIndex,
+        exitIndex: index,
+        quantity: simulator.quantity,
+        grossPnL: grossPnL,
+        brokerage: totalBrokerage,
+        pnl: netPnL,  // Net P&L after brokerage
+        pnlPercent: netPnLPercent,
+        reason: reason,
+        duration: index - entryIndex
+      };
+
+      simulator.trades.push(trade);
+      simulator.totalPnL += netPnL;  // Add net P&L
+      simulator.lastExitIndex = index;  // Track last exit for cooldown
+
+      // Reset position
+      simulator.position = 'FLAT';
+      simulator.entryPrice = 0;
+      simulator.entryIndex = -1;
+      simulator.currentPnL = 0;
+
+      updateSimulatorDisplay();
+    }
+
+    function updateSimulatorDisplay() {
+      // Position
+      const positionEl = document.getElementById('simPosition');
+      if (simulator.position === 'LONG') {
+        positionEl.textContent = '🟢 LONG';
+        positionEl.style.color = '#00c853';
+      } else if (simulator.position === 'SHORT') {
+        positionEl.textContent = '🔴 SHORT';
+        positionEl.style.color = '#ff4444';
+      } else {
+        positionEl.textContent = '⚪ FLAT';
+        positionEl.style.color = '#888';
+      }
+
+      // Entry price
+      const entryEl = document.getElementById('simEntryPrice');
+      entryEl.textContent = simulator.entryPrice > 0 ? simulator.entryPrice.toFixed(2) : '--';
+
+      // Current P&L
+      const pnlEl = document.getElementById('simPnL');
+      const pnlColor = simulator.currentPnL >= 0 ? '#00c853' : '#ff4444';
+      pnlEl.style.color = pnlColor;
+      pnlEl.textContent = `₹${simulator.currentPnL.toFixed(2)}`;
+      if (simulator.position !== 'FLAT' && simulator.entryPrice > 0) {
+        const pnlPercent = (simulator.currentPnL / simulator.entryPrice) * 100;
+        pnlEl.textContent += ` (${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%)`;
+      }
+
+      // Total P&L
+      const totalPnLEl = document.getElementById('simTotalPnL');
+      const totalPnLColor = simulator.totalPnL >= 0 ? '#00c853' : '#ff4444';
+      totalPnLEl.style.color = totalPnLColor;
+      totalPnLEl.textContent = `₹${simulator.totalPnL.toFixed(2)}`;
+
+      // Statistics
+      const totalTrades = simulator.trades.length;
+      document.getElementById('simTotalTrades').textContent = totalTrades;
+
+      if (totalTrades > 0) {
+        const winningTrades = simulator.trades.filter(t => t.pnl > 0);
+        const losingTrades = simulator.trades.filter(t => t.pnl < 0);
+        const winRate = (winningTrades.length / totalTrades) * 100;
+
+        document.getElementById('simWinRate').textContent = `${winRate.toFixed(1)}%`;
+
+        const avgWin = winningTrades.length > 0
+          ? winningTrades.reduce((sum, t) => sum + t.pnl, 0) / winningTrades.length
+          : 0;
+        document.getElementById('simAvgWin').textContent = `₹${avgWin.toFixed(2)}`;
+
+        const avgLoss = losingTrades.length > 0
+          ? losingTrades.reduce((sum, t) => sum + t.pnl, 0) / losingTrades.length
+          : 0;
+        document.getElementById('simAvgLoss').textContent = `₹${avgLoss.toFixed(2)}`;
+
+        const totalWins = winningTrades.reduce((sum, t) => sum + Math.abs(t.pnl), 0);
+        const totalLosses = Math.abs(losingTrades.reduce((sum, t) => sum + t.pnl, 0));
+        const profitFactor = totalLosses > 0 ? totalWins / totalLosses : totalWins > 0 ? 999 : 0;
+        document.getElementById('simProfitFactor').textContent = profitFactor.toFixed(2);
+      } else {
+        document.getElementById('simWinRate').textContent = '0%';
+        document.getElementById('simAvgWin').textContent = '₹0';
+        document.getElementById('simAvgLoss').textContent = '₹0';
+        document.getElementById('simProfitFactor').textContent = '0.00';
+      }
+
+      // Trade history
+      const historyEl = document.getElementById('simTradeHistory');
+      if (simulator.trades.length === 0) {
+        historyEl.innerHTML = '<div style="color: #666; text-align: center; padding: 20px; font-style: italic;">No trades yet</div>';
+      } else {
+        historyEl.innerHTML = simulator.trades.slice().reverse().map(trade => {
+          const pnlColor = trade.pnl >= 0 ? '#00c853' : '#ff4444';
+          const directionColor = trade.direction === 'LONG' ? '#00c853' : '#ff4444';
+          const directionLabel = trade.direction === 'LONG' ? 'LONG' : 'SHORT';
+          return `
+            <div style="padding: 10px; border-bottom: 1px solid #222; font-size: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <span style="color: ${directionColor}; font-weight: bold;">${directionLabel}</span>
+                <span style="color: ${pnlColor}; font-weight: bold; font-size: 14px;">₹${trade.pnl.toFixed(2)} (${trade.pnlPercent >= 0 ? '+' : ''}${trade.pnlPercent.toFixed(2)}%)</span>
+              </div>
+              <div style="color: #666; font-size: 11px; margin-bottom: 3px;">
+                Entry: ${trade.entryPrice.toFixed(2)} @ ${trade.entryTime} | Exit: ${trade.exitPrice.toFixed(2)} @ ${trade.exitTime}
+              </div>
+              <div style="color: #888; font-size: 10px;">
+                ${trade.reason} • Duration: ${trade.duration} snapshots • Brokerage: ₹${(trade.brokerage || 0).toFixed(2)}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
     // Play/Pause
     document.getElementById('btnPlay').addEventListener('click', () => {
       isPlaying = !isPlaying;
       const btn = document.getElementById('btnPlay');
-      
+
       if (isPlaying) {
         btn.textContent = '⏸ Pause';
         btn.className = 'btn-pause';
@@ -1035,6 +2738,10 @@
           currentIndex++;
           if (currentIndex >= data.length) {
             currentIndex = 0;
+            // Reset simulator if looping
+            if (simulator.isRunning) {
+              simulator.lastProcessedIndex = -1;
+            }
           }
           renderSnapshot(currentIndex);
         }, 100); // 10x speed
@@ -1058,4 +2765,5 @@
     });
   </script>
 </body>
+
 </html>

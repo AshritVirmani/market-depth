@@ -1,0 +1,19 @@
+{
+  "name": "universal-stock-terminal",
+  "version": "1.0.0",
+  "description": "Universal Stock Terminal for Profitable Conditions",
+  "main": "stock_terminal_server.js",
+  "scripts": {
+    "start": "node stock_terminal_server.js",
+    "dev": "nodemon stock_terminal_server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.14.2",
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
+
