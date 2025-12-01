@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build outputs
+dist/
+
+# Market data (generated files)
+market_data/
+analysis/
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+
+# Old analysis/test files (if any remain)
+*.json.gz
+HDFCBANK_*.json
+ICICIBANK_*.json
+STATEBANKOFINDIA_*.json
+DABURINDIA_*.json
+
+# CSV data (too large for git - optional, uncomment if needed)
+# api-scrip-master-detailed.csv
+
